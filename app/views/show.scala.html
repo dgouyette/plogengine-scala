@@ -1,11 +1,11 @@
-@(post: Post)
+@(post: Post, loggedin : Boolean = false)
 
 @import utils.TextileHelper._
 @import play.api.data.format.Formats._
 @import java.text.SimpleDateFormat
 
 
-@main(post.title) {
+@main(post.title, loggedin) {
 
 <h2>@post.title</h2>
 <hr/>

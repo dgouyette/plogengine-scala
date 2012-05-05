@@ -4,7 +4,6 @@ import play.api.mvc._
 import play.api.Play.current
 import play.api.cache.Cached
 import utils.TextileHelper
-import java.util.ArrayList
 import com.sun.syndication.io.SyndFeedOutput
 import java.text.SimpleDateFormat
 import play.api.data.Form
@@ -14,6 +13,7 @@ import play.api.libs.openid.OpenID
 import play.api.Logger
 import play.api.libs.concurrent.{Thrown, Redeemed}
 import com.sun.syndication.feed.synd.{SyndContentImpl, SyndEntryImpl, SyndFeedImpl}
+import java.util.ArrayList
 
 
 object Application extends Controller {
@@ -27,12 +27,12 @@ object Application extends Controller {
   )
 
 
-  def index(page: Int) = Cached("index" + page) {
+  def index(page: Int) =
     Action {
-      val posts = Post.findAllPublished(page);
-      Ok(views.html.index(posts))
+      implicit request =>
+        val posts = Post.findAllPublished(page);
+        Ok(views.html.index(posts, request.session.get("email").isEmpty))
     }
-  }
 
 
   def logout = Action {
@@ -66,6 +66,7 @@ object Application extends Controller {
             Redirect(routes.Administration.index).withSession("email" -> info.attributes.get("email").get)
           case Thrown(t) => {
             Redirect(routes.Application.login)
+
           }
         }))
   }
@@ -74,16 +75,16 @@ object Application extends Controller {
     Ok(views.html.login())
   }
 
-  def showByDateAndUrl(annee: String, mois: String, jour: String, url: String) = Cached("showByDateAndUrl" + url) {
+  def showByDateAndUrl(annee: String, mois: String, jour: String, url: String) =
     Action {
+      implicit request =>
       Post.findByUrl(url).map {
         post =>
-          Ok(views.html.show(post))
+          Ok(views.html.show(post, request.session.get("email").isEmpty))
       }.getOrElse(
         NotFound("Article non trouve")
       )
     }
-  }
 
 
   def fileContent(name: String) = Cached("fileContent" + name) {
@@ -128,7 +129,6 @@ object Application extends Controller {
       Ok(new SyndFeedOutput().outputString(feed)).as(XML)
     }
   }
-
 
 
 }

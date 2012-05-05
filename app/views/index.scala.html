@@ -1,4 +1,4 @@
-@(currentPage: Page[Post])
+@(currentPage: Page[Post], loggedin : Boolean = false)
 
 @import utils.TextileHelper._
 @import play.api.data.format.Formats._
@@ -12,7 +12,7 @@
 routes.Application.index(newPage)
 }
 
-@main("") {
+@main("", loggedin) {
 
 @currentPage.items.map { post =>
 <h2>
