@@ -1,0 +1,59 @@
+@(id: Long, myForm: Form[Post])
+
+@import utils.TextileHelper._
+@import play.api.data.format.Formats._
+@import java.text.SimpleDateFormat
+@import helper._
+
+
+@main("") {
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('textarea').markItUp(mySettings);
+    });
+
+</script>
+
+<h2>@myForm("title").value</h2>
+<hr/>
+
+Par XXX | @myForm("hits").value HITS | le @myForm("postedAt").value
+@helper.form(action = routes.Administration.update(id), 'class -> "form-horizontal") {
+<div class="row">
+
+
+    <div class="span8">
+        @helper.inputText(myForm("id"), 'class ->"span1")
+        @helper.inputText(myForm("title"), 'class ->"span8")
+        @helper.inputText(myForm("url"), 'class ->"span8")
+        @helper.inputText(myForm("postedAt"), 'class ->"span8")
+        @helper.checkbox(myForm("published"), 'class ->"span8")
+        @helper.textarea(myForm("chapeau"))
+
+
+        @helper.textarea(myForm("content"))
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+
+
+</div>
+}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+

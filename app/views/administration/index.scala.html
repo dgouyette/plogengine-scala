@@ -1,0 +1,53 @@
+@(posts: Seq[Post])
+
+@import utils.TextileHelper._
+@import play.api.data.format.Formats._
+@import java.text.SimpleDateFormat
+
+@main("") {
+
+
+<h2>Liste des articles :</h2>
+
+<table class="table table-bordered table-striped">
+
+
+    <thead>
+        <th>#</th>
+        <th>title</th>
+        <th>hits</th>
+        <th>published</th>
+        <th>postedAt</th>
+        <th colspan="3">Actions</th>
+    </thead>
+    @posts.map { post =>
+    <tr>
+        <td>@post.id</td>
+        <td>@post.title</td>
+        <td>@post.hits</td>
+        <td>@post.published</td>
+        <td>@post.postedAt</td>
+        <td><a href="@routes.Administration.edit(post.id.get)"><button class="btn btn-mini btn-primary">Edit</button></a></td>
+        <td><a href='@routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url)'><button class="btn btn-mini btn-primary">show</button></a> </td>
+        <td><a href="@routes.Administration.delete(post.id.get)" class="ConfirmDelete" title="Delete post @post.id ?"><button class="btn btn-mini btn-danger">Del</button></a> </td>
+
+    </tr>
+    }
+
+</table>
+
+
+
+<div class="row">
+    <div class="span2">&nbsp;</div>
+    <div class="span6"><a href="@routes.Administration.create"><button class="btn btn-primary">Ajouter un article</button></a></div>
+</div>
+<p>&nbsp;</p>
+
+}
+
+
+
+
+
+

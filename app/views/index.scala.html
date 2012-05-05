@@ -1,0 +1,67 @@
+@(currentPage: Page[Post])
+
+@import utils.TextileHelper._
+@import play.api.data.format.Formats._
+@import java.text.SimpleDateFormat
+
+
+@****************************************
+* Helper generating navigation links    *
+****************************************@
+@link(newPage: Int) = @{
+routes.Application.index(newPage)
+}
+
+@main("") {
+
+@currentPage.items.map { post =>
+<h2>
+    <a href='@routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url)'>@post.title</a>
+</h2>
+
+
+<p>
+    @Html(toHtml(post.chapeau))
+</p>
+
+<hr/>
+@post.hits hits
+}
+
+
+<div class="row">
+    <div class="span8">&#160;</div>
+    <div id="pagination" class="pagination">
+        <ul>
+            @currentPage.prev.map { page =>
+            <li class="prev">
+                <a href="@link(page)">&lt;</a>
+            </li>
+            }.getOrElse {
+            <li class="prev disabled">
+                <a>&lt;</a>
+            </li>
+            }
+            <li class="current">
+                <a> @(currentPage.offset + 1) to @(currentPage.offset + currentPage.items.size) of
+                    @currentPage.total</a>
+            </li>
+            @currentPage.next.map { page =>
+            <li class="next">
+                <a href="@link(page)">&gt;</a>
+            </li>
+            }.getOrElse {
+            <li class="next disabled">
+                <a>&gt;</a>
+            </li>
+            }
+        </ul>
+    </div>
+</div>
+
+
+}
+
+
+
+

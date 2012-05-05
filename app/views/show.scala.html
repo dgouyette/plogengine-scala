@@ -1,0 +1,36 @@
+@(post: Post)
+
+@import utils.TextileHelper._
+@import play.api.data.format.Formats._
+@import java.text.SimpleDateFormat
+
+
+@main(post.title) {
+
+<h2>@post.title</h2>
+<hr/>
+Par XXX | @post.hits HITS | le @post.postedAt
+
+
+<p>
+    @Html(toHtml(post.chapeau))
+</p>
+
+
+<p>
+    @Html(toHtml(post.content))
+</p>
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
