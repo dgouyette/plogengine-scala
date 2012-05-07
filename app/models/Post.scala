@@ -81,7 +81,7 @@ object Post {
         val totalRows = SQL(
           """
             select count(*) from Post
-            where published = true
+            where published = 'true'
           """
         ).as(scalar[Long].single)
 
@@ -173,7 +173,7 @@ object User {
     Logger.debug("findByEmail " + email)
     DB.withConnection {
       implicit connection =>
-        SQL("Select * from User u where u.email= {email}")
+        SQL("Select * from user where email like '{email}'")
           .on('email -> email)
           .as(simpleUser.singleOpt)
     }

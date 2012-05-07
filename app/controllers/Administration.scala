@@ -3,11 +3,11 @@ package controllers
 import anorm.{Pk, NotAssigned}
 
 
-import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
 import models.{Post, User}
 import scala.Long
+import play.api.data.Forms._
 
 
 /**
@@ -27,7 +27,7 @@ object Administration extends Controller {
         request.session.get("email").flatMap(u => User.findByEmail(u)).map {
           user =>
             f(user, request)
-        }.getOrElse(Unauthorized("401 - unautoriezd"))
+        }.getOrElse(Unauthorized("401 - Unauthorized"))
     }
   }
 
