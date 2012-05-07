@@ -19,7 +19,7 @@ case class Image(id: Pk[Long], data: Array[Byte], postId: Long, contentType: Str
 
 case class Authent(openid_identifier: String, action: String)
 
-case class User(id: Pk[Long],firstName: String, lastName: String, email: String)
+case class User(id: Pk[Long],firstName: String, lastName: String, courriel: String)
 
 
 /**
@@ -73,7 +73,7 @@ object Post {
 
     DB.withConnection {
       implicit connection =>
-        val posts = SQL("select * from Post where published = true order by postedAt  desc limit {pageSize} offset {offset}")
+        val posts = SQL("select * from post where published = true order by postedAt  desc limit {pageSize} offset {offset}")
           .on(
           'pageSize -> pageSize,
           'offset -> offset).as(Post.simple *)
@@ -161,20 +161,19 @@ object User {
 
   val simpleUser = {
     get[Pk[Long]]("id") ~
-      get[String]("email") ~
+      get[String]("courriel") ~
       get[String]("firstName") ~
       get[String]("lastName") map {
-      case id ~ email ~ firstName ~ lastName => User(id, email, firstName, lastName)
+      case id ~ courriel ~ firstName ~ lastName => User(id, courriel, firstName, lastName)
     }
   }
 
 
   def findByEmail(email: String): Option[User] = {
-    Logger.debug("findByEmail " + email)
     DB.withConnection {
       implicit connection =>
-        SQL("Select * from user where email like '{email}'")
-          .on('email -> email)
+        SQL("select * from utilisateur  WHERE courriel = {param}")
+          .on('param-> email)
           .as(simpleUser.singleOpt)
     }
   }
@@ -202,7 +201,7 @@ object Image {
     DB.withConnection {
       implicit connection =>
 
-        SQL("Select * from Image i where i.fileName = {name}")
+        SQL("select * from image i where i.fileName = {name}")
           .on('name -> name)
           .as(simpleByte.singleOpt)
 
