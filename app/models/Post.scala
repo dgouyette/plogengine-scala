@@ -15,11 +15,11 @@ import scala.{Long, Option}
 
 case class Post(id: Pk[Long], title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean)
 
-case class Image(id: Pk[Long], data: Array[Byte], postId: Long, contentType: String, fileName: String)
+case class Image(data: Array[Byte], postId: Long, contentType: String, fileName: String)
 
 case class Authent(openid_identifier: String, action: String)
 
-case class User(id: Pk[Long],firstName: String, lastName: String, courriel: String)
+case class User(id: Pk[Long], firstName: String, lastName: String, courriel: String)
 
 
 /**
@@ -173,7 +173,7 @@ object User {
     DB.withConnection {
       implicit connection =>
         SQL("select * from utilisateur  WHERE courriel = {param}")
-          .on('param-> email)
+          .on('param -> email)
           .as(simpleUser.singleOpt)
     }
   }
@@ -194,6 +194,25 @@ object Image {
     get[Array[Byte]]("data")
   }
 
+
+  def create(image: Image) = {
+    Logger.info("CREATE ["+image+"]")
+    DB.withConnection {
+      implicit connection =>
+      SQL("""
+        insert into image
+         (data, postid, contenttype, fileName)
+         values
+         ({data}, {postid}, {contenttype}, {filename})
+         """)
+      .on('data -> image.data,
+          'postid -> image.postId,
+          'contenttype -> image.contentType,
+          'filename -> image.fileName
+      ).executeUpdate()
+    }
+  }
+
   def findByName(name: String): Option[Array[Byte]] = {
 
     Logger.debug("findByName " + name)
@@ -201,7 +220,7 @@ object Image {
     DB.withConnection {
       implicit connection =>
 
-        SQL("select * from image i where i.fileName = {name}")
+        SQL("select * from image i where i.filename = {name}")
           .on('name -> name)
           .as(simpleByte.singleOpt)
 

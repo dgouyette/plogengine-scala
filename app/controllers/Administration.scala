@@ -5,9 +5,12 @@ import anorm.{Pk, NotAssigned}
 
 import play.api.data._
 import play.api.mvc._
-import models.{Post, User}
 import scala.Long
 import play.api.data.Forms._
+import com.google.common.io.Files
+import models.{Post, Image, User}
+
+//import org.apache.commons.io.FileUtils
 
 
 /**
@@ -68,7 +71,7 @@ object Administration extends Controller {
 
   def save = Authenticated {
     (user, request) =>
-      implicit  val req= request
+      implicit val req = request
       postForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.administration.create(formWithErrors)),
         post => {
@@ -78,9 +81,30 @@ object Administration extends Controller {
       )
   }
 
+  def upload(id: Long) = Authenticated {
+    (user, request) =>
+      implicit val req = request
+      val textBody = request.body.asMultipartFormData
+      textBody.map {
+        theFile =>
+          theFile.file("picture").map {
+            picture =>
+              val data = Files.toByteArray(picture.ref.file)
+              val image = new Image(data, id, picture.contentType.get, picture.filename)
+              Image.create(image)
+              Redirect(routes.Administration.index).flashing("success" -> "Fichier ajoute");
+          }.getOrElse {
+            BadRequest("Probleme lors de l ajout du fichier")
+          }
+
+      }.getOrElse {
+        BadRequest("Probleme lors de l ajout du fichier")
+      }
+  }
+
   def update(id: Long) = Authenticated {
     (user, request) =>
-    implicit  val req= request
+      implicit val req = request
       postForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.administration.edit(id, formWithErrors)),
         post => {
