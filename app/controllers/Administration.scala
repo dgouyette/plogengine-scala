@@ -5,10 +5,11 @@ import anorm.{Pk, NotAssigned}
 
 import play.api.data._
 import play.api.mvc._
-import scala.Long
 import play.api.data.Forms._
 import com.google.common.io.Files
+import scala.Long
 import models.{Post, Image, User}
+import play.api.mvc.Results._
 
 //import org.apache.commons.io.FileUtils
 
@@ -81,6 +82,14 @@ object Administration extends Controller {
       )
   }
 
+
+  def imageDelete(id: Long, idArticle : Long) = Authenticated {
+    (user, request) =>
+      implicit val req = request
+      Image.deleteById(id)
+      Redirect(routes.Administration.edit(idArticle))
+  }
+
   def upload(id: Long) = Authenticated {
     (user, request) =>
       implicit val req = request
@@ -90,7 +99,7 @@ object Administration extends Controller {
           theFile.file("picture").map {
             picture =>
               val data = Files.toByteArray(picture.ref.file)
-              val image = new Image(data, id, picture.contentType.get, picture.filename)
+              val image = new Image(NotAssigned, picture.contentType.get, data, picture.filename, id)
               Image.create(image)
               Redirect(routes.Administration.index).flashing("success" -> "Fichier ajoute");
           }.getOrElse {
@@ -106,7 +115,8 @@ object Administration extends Controller {
     (user, request) =>
       implicit val req = request
       postForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.administration.edit(id, formWithErrors)),
+        formWithErrors =>
+          BadRequest(views.html.administration.edit(id, formWithErrors, Image.findByPostId(id))),
         post => {
           Post.update(id, post)
           Redirect(routes.Administration.index())
@@ -116,9 +126,11 @@ object Administration extends Controller {
 
   def edit(id: Long) = Authenticated {
     (user, request) =>
+
+      val images = Image.findByPostId(id);
       Post.findById(id).map {
         post =>
-          Ok(views.html.administration.edit(post.id.get, postForm.fill(post)))
+          Ok(views.html.administration.edit(post.id.get, postForm.fill(post), images))
       }.getOrElse(
         NotFound("Not found")
       )

@@ -1,4 +1,4 @@
-@(id: Long, myForm: Form[Post])
+@(id: Long, myForm: Form[Post], images: Seq[Image])
 
 @import utils.TextileHelper._
 @import play.api.data.format.Formats._
@@ -8,6 +8,9 @@
 
 @main("") {
 
+@images.map { image =>
+    <li>@image.filename - <a href="@routes.Administration.imageDelete(image.id.get, id)">delete</a></li>
+}
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -24,6 +27,7 @@
 <input type="text" name="id" value="@id">
 @helper.inputText(myForm("id"), 'class ->"span1")
 }
+
 
 Par XXX | @myForm("hits").value HITS | le @myForm("postedAt").value
 @helper.form(action = routes.Administration.update(id), 'class -> "form-horizontal") {
@@ -46,7 +50,6 @@ Par XXX | @myForm("hits").value HITS | le @myForm("postedAt").value
         @helper.textarea(myForm("content"))
 
         <div class="form-actions">
-            <input type=""
             <button type="submit" class="btn btn-primary">Save</button>
         </div>
     </div>

@@ -2,20 +2,20 @@ package models
 
 
 import play.api.Play.current
-import anorm._
 import anorm.SqlParser._
 
 
-import play.api.db.DB
 import java.util.Date
 import play.api.Logger
-import scala.Predef._
+import play.api.db.DB
 import scala.{Long, Option}
+import anorm._
+import scala.Predef._
 
 
 case class Post(id: Pk[Long], title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean)
 
-case class Image(data: Array[Byte], postId: Long, contentType: String, fileName: String)
+case class Image(id: Pk[Long], contenttype: String, data: Array[Byte], filename: String, postid: Long)
 
 case class Authent(openid_identifier: String, action: String)
 
@@ -93,7 +93,7 @@ object Post {
   def findAll(): Seq[Post] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select * from Post order by postedAt desc").as(Post.simple *)
+        SQL("select * from Post order by postedAt desc").as(simple *)
     }
   }
 
@@ -195,21 +195,52 @@ object Image {
   }
 
 
-  def create(image: Image) = {
-    Logger.info("CREATE ["+image+"]")
+
+
+  val simple = {
+    get[Pk[Long]]("id") ~
+      get[String]("contenttype") ~
+      get[Array[Byte]]("data") ~
+      get[String]("filename") ~
+      get[Long]("postid") map {
+      case id ~ contenttype ~ data ~ filename ~ postid => Image(id, contenttype, data, filename, postid)
+    }
+
+  }
+
+
+  def deleteById(id:Long)= {
     DB.withConnection {
       implicit connection =>
-      SQL("""
+        SQL("delete from image where id = {id}").on('id -> id).executeUpdate()
+    }
+  }
+
+  def findByPostId(id: Long) = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("select * from image where postid={postid}").on('postid -> id).as(simple.*);
+
+
+    }
+  }
+
+
+  def create(image: Image) = {
+    Logger.info("CREATE [" + image + "]")
+    DB.withConnection {
+      implicit connection =>
+        SQL("""
         insert into image
          (data, postid, contenttype, fileName)
          values
          ({data}, {postid}, {contenttype}, {filename})
          """)
-      .on('data -> image.data,
-          'postid -> image.postId,
-          'contenttype -> image.contentType,
-          'filename -> image.fileName
-      ).executeUpdate()
+          .on('data -> image.data,
+          'postid -> image.postid,
+          'contenttype -> image.contenttype,
+          'filename -> image.filename
+        ).executeUpdate()
     }
   }
 
