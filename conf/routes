@@ -17,7 +17,8 @@ GET     /admin/imageDelete:id       controllers.Administration.imageDelete(id:Lo
 GET     /admin/delete/:id           controllers.Administration.delete(id:Long)
 POST    /admin/save/                controllers.Administration.save()
 POST    /admin/update/              controllers.Administration.update(id:Long)
-POST    /admin/upload/:id              controllers.Administration.upload(id:Long)
+POST    /admin/upload/           controllers.Administration.upload
+POST    /admin/post/restore         controllers.Administration.restore
 
 
 

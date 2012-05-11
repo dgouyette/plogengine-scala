@@ -15,7 +15,11 @@ import scala.Predef._
 
 case class Post(id: Pk[Long], title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean)
 
-case class Image(id: Pk[Long], contenttype: String, data: Array[Byte], filename: String, postid: Long)
+case class LightPost(title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean)
+
+case class PostBackup(post: LightPost, images: Seq[Image])
+
+case class Image(id: Pk[Long], contenttype: String, data: Array[Byte], filename: String)
 
 case class Authent(openid_identifier: String, action: String)
 
@@ -30,6 +34,11 @@ case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
   lazy val next = Option(page + 1).filter(_ => (offset + items.size) < total)
 }
 
+object LightPost {
+  def create(post: LightPost) = {
+    Post.create(Post(NotAssigned, post.title, post.url, post.chapeau, post.content, post.hits, post.postedAt, post.published))
+  }
+}
 
 object Post {
 
@@ -135,7 +144,7 @@ object Post {
           """
             update post
             set
-              title = {title}, url= {url}, chapeau = {chapeau}, content = {content}, hits = {hits}, postedAt = {postedAt},
+              title = {title}, url= {url}, chapeau = {chapeau}, content = {content},   postedAt = {postedAt},
               published = {published}
             where id = {id}
           """
@@ -145,7 +154,6 @@ object Post {
           'title -> post.title,
           'chapeau -> post.chapeau,
           'content -> post.content,
-          'hits -> post.hits,
           'published -> post.published,
           'postedAt -> post.postedAt
         ).executeUpdate()
@@ -195,33 +203,21 @@ object Image {
   }
 
 
-
-
   val simple = {
     get[Pk[Long]]("id") ~
       get[String]("contenttype") ~
       get[Array[Byte]]("data") ~
-      get[String]("filename") ~
-      get[Long]("postid") map {
-      case id ~ contenttype ~ data ~ filename ~ postid => Image(id, contenttype, data, filename, postid)
+      get[String]("filename") map {
+      case id ~ contenttype ~ data ~ filename => Image(id, contenttype, data, filename)
     }
 
   }
 
 
-  def deleteById(id:Long)= {
+  def deleteById(id: Long) = {
     DB.withConnection {
       implicit connection =>
         SQL("delete from image where id = {id}").on('id -> id).executeUpdate()
-    }
-  }
-
-  def findByPostId(id: Long) = {
-    DB.withConnection {
-      implicit connection =>
-        SQL("select * from image where postid={postid}").on('postid -> id).as(simple.*);
-
-
     }
   }
 
@@ -230,17 +226,23 @@ object Image {
     Logger.info("CREATE [" + image + "]")
     DB.withConnection {
       implicit connection =>
-        SQL("""
+        SQL( """
         insert into image
-         (data, postid, contenttype, fileName)
+         (data, contenttype, fileName)
          values
-         ({data}, {postid}, {contenttype}, {filename})
-         """)
+         ({data},  {contenttype}, {filename})
+             """)
           .on('data -> image.data,
-          'postid -> image.postid,
           'contenttype -> image.contenttype,
           'filename -> image.filename
         ).executeUpdate()
+    }
+  }
+
+  def findAll() = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("select * from image order by filename").as(simple.*)
     }
   }
 
@@ -251,7 +253,7 @@ object Image {
     DB.withConnection {
       implicit connection =>
 
-        SQL("select * from image i where i.filename = {name}")
+        SQL("select * from image  where filename = {name}")
           .on('name -> name)
           .as(simpleByte.singleOpt)
 

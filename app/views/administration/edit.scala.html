@@ -1,4 +1,4 @@
-@(id: Long, myForm: Form[Post], images: Seq[Image])
+@(id: Long, myForm: Form[Post])
 
 @import utils.TextileHelper._
 @import play.api.data.format.Formats._
@@ -8,9 +8,7 @@
 
 @main("") {
 
-@images.map { image =>
-    <li>@image.filename - <a href="@routes.Administration.imageDelete(image.id.get, id)">delete</a></li>
-}
+
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -22,11 +20,7 @@
 <h2>@myForm("title").value</h2>
 <hr/>
 
-@form(action = routes.Administration.upload(id), 'enctype -> "multipart/form-data") {
-<input type="file" name="picture"><input type="submit">
-<input type="text" name="id" value="@id">
-@helper.inputText(myForm("id"), 'class ->"span1")
-}
+
 
 
 Par XXX | @myForm("hits").value HITS | le @myForm("postedAt").value
