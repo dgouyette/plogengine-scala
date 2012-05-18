@@ -14,7 +14,7 @@
 }
 </h2>
 <hr/>
-@post.hits HITS | le @post.postedAt
+@post.hits HITS | le  @{new java.text.SimpleDateFormat("dd/MM/yyyy").format(post.postedAt)}
 
 
 <p>

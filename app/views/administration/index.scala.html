@@ -8,7 +8,6 @@
 
 @main("") {
 
-@flash
 
 
 <h2>Liste des articles (@posts.size) :</h2>
@@ -78,7 +77,6 @@
 @form(action = routes.Administration.upload, 'enctype -> "multipart/form-data") {
 <input type="file" name="picture">
 <button class="btn btn-primary"><i class="icon-white icon-picture"></i>&#160;Ajouter une image</button>
-@helper.inputText(myForm("id"), 'class ->"span1")
 }
 
 
