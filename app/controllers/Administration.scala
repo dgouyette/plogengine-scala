@@ -1,7 +1,5 @@
 package controllers
 
-import anorm.{Pk, NotAssigned}
-
 
 import play.api.data._
 import play.api.mvc._
@@ -12,11 +10,8 @@ import io.Source
 import play.api.libs.json.{Reads, JsValue, Json}
 import anorm._
 import java.util.Date
-import org.joda.time.DateTime
 import java.text.SimpleDateFormat
-import org.joda.time.format.DateTimeFormat
 import models.{LightPost, Post, Image, User}
-import play.api.cache.Cache
 
 
 //import org.apache.commons.io.FileUtils
@@ -57,9 +52,7 @@ object Administration extends Controller {
     )(Post.apply)(Post.unapply)
   )
 
-  def viderCache={
-
-  }
+  def viderCache=TODO
 
 
   def create = Authenticated {
@@ -114,6 +107,7 @@ object Administration extends Controller {
               val data = Files.toByteArray(picture.ref.file)
               val image = new Image(NotAssigned, picture.contentType.get, data, picture.filename)
               Image.create(image)
+
               Redirect(routes.Administration.index).flashing("success" -> "Fichier ajoute");
           }.getOrElse {
             BadRequest("Probleme lors de l ajout du fichier")
@@ -129,7 +123,6 @@ object Administration extends Controller {
     sdf.parse(in)
   }
 
-  //id: Pk[Long], title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean
   def restore = Authenticated {
     (user, request) =>
       implicit val req = request
@@ -167,7 +160,7 @@ object Administration extends Controller {
             BadRequest("Probleme lors de l ajout du fichier")
           }
       }
-      Redirect(routes.Administration.index())
+      Redirect(routes.Administration.index()).flashing("success"-> "fichier ajouté")
   }
 
   def update(id: Long) = Authenticated {

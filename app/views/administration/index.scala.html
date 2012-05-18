@@ -1,4 +1,4 @@
-@(posts: Seq[Post], images : Seq[Image], myForm: Form[Post])
+@(posts: Seq[Post], images : Seq[Image], myForm: Form[Post])(implicit flash: Flash= new Flash)
 
 @import utils.TextileHelper._
 @import play.api.data.format.Formats._
@@ -8,8 +8,10 @@
 
 @main("") {
 
+@flash
 
-<h2>Liste des articles :</h2>
+
+<h2>Liste des articles (@posts.size) :</h2>
 
 <table class="table table-bordered table-striped">
 
@@ -29,15 +31,15 @@
         <td>@post.hits</td>
         <td>@post.published</td>
         <td>@post.postedAt</td>
-        <td><a href="@routes.Administration.edit(post.id.get)">
-            <button class="btn btn-mini btn-primary">Edit</button>
+        <td><a href="@routes.Administration.edit(post.id.get)" title="edit">
+            <button class="btn btn-mini btn-primary"><i class="icon-white icon-pencil">&#160;</i></button>
         </a></td>
         <td>
-            <a href='@routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url)'>
-                <button class="btn btn-mini btn-primary">show</button>
+            <a title="view" href='@routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url)'>
+                <button class="btn btn-mini btn-primary"><i class="icon-white icon-search">&#160;</i></button>
             </a></td>
         <td><a href="@routes.Administration.delete(post.id.get)" class="ConfirmDelete" title="Delete post @post.id ?">
-            <button class="btn btn-mini btn-danger">Del</button>
+            <button class="btn btn-mini btn-danger"><i class="icon-white icon-remove">&#160;</i></button>
         </a></td>
 
     </tr>
@@ -57,7 +59,7 @@
 </div>
 
 
-<h2>Liste des images :</h2>
+<h2>Liste des images (@images.size) : </h2>
 
 <table class="table table-bordered table-striped">
     <thead>
@@ -75,7 +77,7 @@
 
 @form(action = routes.Administration.upload, 'enctype -> "multipart/form-data") {
 <input type="file" name="picture">
-<button class="btn btn-primary">Ajouter une image</button>
+<button class="btn btn-primary"><i class="icon-white icon-picture"></i>&#160;Ajouter une image</button>
 @helper.inputText(myForm("id"), 'class ->"span1")
 }
 

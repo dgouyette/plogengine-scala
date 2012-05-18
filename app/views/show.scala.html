@@ -7,9 +7,14 @@
 
 @main(post.title, loggedin) {
 
-<h2>@post.title</h2>
+
+<h2>@post.title
+@if(!loggedin) {
+<a href="@routes.Administration.edit(post.id.get)" title="edit"><button class="btn btn-mini btn-primary"><i class="icon-white icon-pencil">&#160;</i></button></a>
+}
+</h2>
 <hr/>
-Par XXX | @post.hits HITS | le @post.postedAt
+@post.hits HITS | le @post.postedAt
 
 
 <p>
