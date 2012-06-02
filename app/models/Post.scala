@@ -41,6 +41,14 @@ object LightPost {
 }
 
 object Post {
+  def incrementHits(postId: Pk[Long]){
+    DB.withConnection {
+      implicit connection =>
+        SQL("update post set hits=hits+1 where id = {id}")
+          .on('id -> postId)
+          .executeUpdate()
+    }
+  }
 
 
   def findById(id: Long): Option[Post] = {

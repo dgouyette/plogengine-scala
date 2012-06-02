@@ -80,6 +80,7 @@ object Application extends Controller {
       implicit request =>
       Post.findByUrl(url).map {
         post =>
+          Post.incrementHits(post.id)
           Ok(views.html.show(post, request.session.get("email").isEmpty))
       }.getOrElse(
         NotFound("Article non trouve")
