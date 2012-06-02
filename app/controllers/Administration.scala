@@ -11,10 +11,7 @@ import play.api.libs.json.{Reads, JsValue, Json}
 import anorm._
 import java.util.Date
 import java.text.SimpleDateFormat
-import models.{LightPost, Post, Image, User}
-
-
-//import org.apache.commons.io.FileUtils
+import models._
 
 
 /**
