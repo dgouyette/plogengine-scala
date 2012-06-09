@@ -75,6 +75,21 @@ object Application extends Controller {
     Ok(views.html.login())
   }
 
+
+  //TODO faire un redirect permanent vers l'autre methode show
+  def showByDateAndUrlSimple(url: String) =
+    Action {
+      implicit request =>
+        Post.findByUrl(url).map {
+          post =>
+            Post.incrementHits(post.id)
+            Ok(views.html.show(post, request.session.get("email").isEmpty))
+        }.getOrElse(
+          NotFound("Article non trouve")
+        )
+    }
+
+
   def showByDateAndUrl(annee: String, mois: String, jour: String, url: String) =
     Action {
       implicit request =>
@@ -124,6 +139,7 @@ object Application extends Controller {
           description.setValue(TextileHelper.toHtml(post.chapeau) + " ...");
           entry.setDescription(description);
           entry.setUri(routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url).toString());
+          entry.setLink(entry.getUri)
           entries.add(entry);
       }
       feed.setEntries(entries);
