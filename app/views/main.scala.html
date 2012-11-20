@@ -75,15 +75,17 @@
                 </div>
             </div>
 
-                    <p>&#160;</p>
-                    <p>&#160;</p>
 
 
         <div class="row-fluid">
                 <div class="span2">&#160;</div>
-                <div class="span6">@content</div>
+                <div class="span6">
+                <p class="hidden-tablet hidden-phone">&#160;</p>
+                <p class="hidden-tablet hidden-phone">&#160;</p>
+                @content
+                </div>
                 <div class="span4">
-                    <div id="abonnement">
+                    <div id="abonnement" class="hidden-phone hidden-tablet">
                             <h4>Abonnements</h4>
                           <span><i class="icon-rss"></i><a href="@routes.Application.feed">Flux RSS</a></span>
                           <br/>
