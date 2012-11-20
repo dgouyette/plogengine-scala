@@ -27,12 +27,11 @@ object Application extends Controller {
   )
 
 
-  def index(page: Int) =
-    Action {
-      implicit request =>
-        val posts = Post.findAllPublished(page);
-        Ok(views.html.index(posts, request.session.get("email").isEmpty))
-    }
+  def index(page: Int) = Action {
+    implicit request =>
+      val posts = Post.findAllPublished(page);
+      Ok(views.html.index(posts, request.session.get("email").isEmpty))
+  }
 
 
   def logout = Action {
@@ -93,13 +92,13 @@ object Application extends Controller {
   def showByDateAndUrl(annee: String, mois: String, jour: String, url: String) =
     Action {
       implicit request =>
-      Post.findByUrl(url).map {
-        post =>
-          Post.incrementHits(post.id)
-          Ok(views.html.show(post, request.session.get("email").isEmpty))
-      }.getOrElse(
-        NotFound("Article non trouve")
-      )
+        Post.findByUrl(url).map {
+          post =>
+            Post.incrementHits(post.id)
+            Ok(views.html.show(post, request.session.get("email").isEmpty))
+        }.getOrElse(
+          NotFound("Article non trouve")
+        )
     }
 
 
