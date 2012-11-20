@@ -8,13 +8,17 @@
 @main(post.title, loggedin) {
 
 
+    <ul class="breadcrumb">
+        <li><a href="@routes.Application.index(0)">Accueil</a> <span class="divider">/</span>@post.title</li>
+    </ul>
+
 <h2>@post.title
 @if(!loggedin) {
 <a href="@routes.Administration.edit(post.id.get)" title="edit"><button class="btn btn-mini btn-primary"><i class="icon-white icon-pencil">&#160;</i></button></a>
 }
 </h2>
 <hr/>
-@post.hits HITS | le  @{new java.text.SimpleDateFormat("dd/MM/yyyy").format(post.postedAt)}
+@{"%,d".format(post.hits.get)} HITS | le  @{new java.text.SimpleDateFormat("dd/MM/yyyy").format(post.postedAt)}
 
 
 <p>

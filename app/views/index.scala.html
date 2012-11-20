@@ -17,7 +17,7 @@ routes.Application.index(newPage)
 @currentPage.items.map { post =>
 <h2>
     <a href='@routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url)'>@post.title</a>
-</h2>@post.hits hits
+</h2>@{"%,d".format(post.hits.get)} hits
 
 
 <p>

@@ -21,6 +21,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("markitup/jquery.markitup.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("markitup/sets/textile/set.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/shjs/0.6/sh_main.js")" type="text/javascript"></script>
@@ -40,7 +41,7 @@
                     if (question == '') question = 'Delete this record?';
                     return confirm(question);
                 });
-
+                $('.popover').popover('show')
                 openid.init('openid_identifier');
                 sh_highlightDocument('@routes.Assets.at("javascripts/shjs/0.6/")', '.js');
             });
@@ -83,8 +84,7 @@
                 <div class="span6">@content</div>
                 <div class="span4">
                     <div id="abonnement">
-                        <h4>Abonnements</h4>
-
+                            <h4>Abonnements</h4>
                           <span><i class="icon-rss"></i><a href="@routes.Application.feed">Flux RSS</a></span>
                           <br/>
                           <span><i class="icon-linkedin"></i><a href="http://www.linkedin.com/in/dgouyette">Profil linkedin</a></span>
@@ -93,16 +93,19 @@
                          <br/>
                           <span><i class="icon-github"></i><a href="https://github.com/dgouyette">Profil github</a></span>
 
-
-                       <br/>
-
-
-                        <p>
-                            <div id="zindepWidget" data-profil="http://www.leszindeps.fr/p/Damien/Gouyette/8aff0abe371c3fd601371c3fe2890009" data-width="200"></div>
-                        </p>
+                            <p>
+                                <div id="zindepWidget" data-profil="http://www.leszindeps.fr/p/Damien/Gouyette/8aff0abe371c3fd601371c3fe2890009" data-width="200"></div>
+                            </p>
 
 
                     </div>
+
+                    <div id="license" class="span4">
+                        <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/>
+                        Cette oeuvre est mise à disposition selon les termes de la Licence Creative Commons Paternité -
+                        Pas d'Utilisation Commerciale - Partage à l'Identique 3.0 non transcrit.</a>
+                    </div>
+
                 </div>
             </div>
 
