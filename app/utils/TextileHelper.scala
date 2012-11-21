@@ -1,13 +1,21 @@
 package utils
 
+import org.eclipse.mylyn.wikitext.core.parser.MarkupParser
+import org.eclipse.mylyn.wikitext.textile.core.TextileLanguage
 
-import org.clapper.markwrap._
 
 object TextileHelper {
 
+  val parser = new MarkupParser(new TextileLanguage())
+
+
   def toHtml(in: Option[String]): String = {
-    val parser = MarkWrap.parserFor(MarkupType.Textile)
-    in.map(in => parser.parseToHTML(in)).getOrElse("")
+
+    in match {
+      case Some(str) => parser.parseToHtml(str)
+      case None => ""
+    }
+
   }
 
 

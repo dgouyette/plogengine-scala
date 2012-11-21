@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc._
 import play.api.Play.current
 import play.api.cache.Cached
-import utils.TextileHelper
+import utils.{ElasticClient, TextileHelper}
 import com.sun.syndication.io.SyndFeedOutput
 import java.text.SimpleDateFormat
 import play.api.data.Form
@@ -29,7 +29,7 @@ object Application extends Controller {
 
   def index(page: Int) = Action {
     implicit request =>
-      val posts = Post.findAllPublished(page);
+      val posts = Post.findAllPublished(page)
       Ok(views.html.index(posts, request.session.get("email").isEmpty))
   }
 
@@ -38,7 +38,7 @@ object Application extends Controller {
     Redirect(routes.Application.index()).withNewSession
   }
 
-  def loginPost = Action {
+  def loginPost = TODO/**Action {
     implicit request =>
       Form(single(
         "openid_identifier" -> nonEmptyText
@@ -54,10 +54,10 @@ object Application extends Controller {
         }))
       }
       )
-  }
+  }    **/
 
 
-  def openIDCallback = Action {
+  def openIDCallback = TODO /**Action {
     implicit request =>
       AsyncResult(
         OpenID.verifiedId.extend(_.value match {
@@ -68,7 +68,7 @@ object Application extends Controller {
 
           }
         }))
-  }
+  }        **/
 
   def login = Action {
     Ok(views.html.login())
@@ -79,6 +79,7 @@ object Application extends Controller {
   def showByDateAndUrlSimple(url: String) =
     Action {
       implicit request =>
+        println("showByDateAndUrlSimple")
         Post.findByUrl(url).map {
           post =>
             Post.incrementHits(post.id)
@@ -92,9 +93,12 @@ object Application extends Controller {
   def showByDateAndUrl(annee: String, mois: String, jour: String, url: String) =
     Action {
       implicit request =>
+        println("showByDateAndUrl")
+
         Post.findByUrl(url).map {
           post =>
             Post.incrementHits(post.id)
+            ElasticClient.indexPost(post)
             Ok(views.html.show(post, request.session.get("email").isEmpty))
         }.getOrElse(
           NotFound("Article non trouve")

@@ -12,6 +12,7 @@ import anorm._
 import java.util.Date
 import java.text.SimpleDateFormat
 import models._
+import utils.ElasticClient
 
 
 /**
@@ -52,6 +53,14 @@ object Administration extends Controller {
   def viderCache=TODO
 
 
+
+
+  def clearIndexes = Authenticated {
+    (user, request) =>
+      ElasticClient.clearIndex
+    Ok("Index vidé")
+  }
+
   def create = Authenticated {
     (user, request) =>
       Ok(views.html.administration.create(postForm))
@@ -59,6 +68,8 @@ object Administration extends Controller {
 
   def index = Authenticated {
     (user, request) =>
+
+
       val posts = Post.findAll()
       val images = Image.findAll()
       Ok(views.html.administration.index(posts, images, postForm))
@@ -120,7 +131,7 @@ object Administration extends Controller {
     sdf.parse(in)
   }
 
-  def restore = Authenticated {
+  def restore = TODO/**Authenticated {
     (user, request) =>
       implicit val req = request
 
@@ -158,7 +169,7 @@ object Administration extends Controller {
           }
       }
       Redirect(routes.Administration.index()).flashing("success"-> "fichier ajouté")
-  }
+  }     **/
 
   def update(id: Long) = Authenticated {
     (user, request) =>

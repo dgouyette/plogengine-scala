@@ -10,7 +10,7 @@ object ApplicationBuild extends Build {
   val appDependencies = Seq(
     //"mysql" % "mysql-connector-java" % "5.1.17",
     "rome" % "rome" % "1.0",
-    "org.clapper" % "markwrap_2.9.1" % "0.5.4",
+    "org.clapper" % "markwrap_2.10" % "0.5.5",
     "postgresql" % "postgresql" % "9.0-801.jdbc4",
     "commons-io" % "commons-io" % "2.0.1"
   )
