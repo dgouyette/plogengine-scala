@@ -1,7 +1,7 @@
 package controllers
 
 import play.api.mvc._
-import models.Account
+import models.{AccountDao, Account}
 import play.api.Logger
 
 
@@ -29,7 +29,7 @@ trait Secured {
     email =>
       Logger.info("withUser %s".format(email))
       implicit request =>
-        Account.findByEmail(email).map {
+        AccountDao.findByEmail(email).map {
           Logger.info("authent ok")
           f(_)(request)
         }.getOrElse {

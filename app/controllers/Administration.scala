@@ -6,7 +6,6 @@ import play.api.mvc._
 import play.api.data.Forms._
 import com.google.common.io.Files
 import scala.Long
-import anorm._
 import java.util.Date
 import java.text.SimpleDateFormat
 import models._
@@ -16,13 +15,13 @@ object Administration extends Controller with Secured {
 
   val postForm = Form(
     mapping(
-      "id" -> ignored(NotAssigned: Pk[Long]),
+      "id" -> optional(longNumber),
       "title" -> nonEmptyText,
       "url" -> nonEmptyText,
       "chapeau" -> optional(nonEmptyText),
       "content" -> optional(text()),
       "hits" -> optional(longNumber),
-      "postedAt" -> date("yyyy-MM-dd"),
+      "postedAt" -> sqlDate("yyyy-MM-dd"),
       "published" -> boolean
     )(Post.apply)(Post.unapply)
   )
@@ -35,13 +34,13 @@ object Administration extends Controller with Secured {
   def create() = withUser {
     username =>
       request =>
-      Ok(views.html.administration.create(postForm))
+        Ok(views.html.administration.create(postForm))
   }
 
-  def index()  = withUser {
-    username =>request =>
-      val posts = Post.findAll()
-      val images = Image.findAll()
+  def index() = withUser {
+    username => request =>
+      val posts = PostDao.findAll()
+      val images = ImageDao.findAll()
       Ok(views.html.administration.index(posts, images, postForm))
   }
 
@@ -49,36 +48,36 @@ object Administration extends Controller with Secured {
   def delete(id: Long) = withUser {
     username =>
       request =>
-      Post.delete(id)
-      Redirect(routes.Administration.index())
+        PostDao.delete(id)
+        Redirect(routes.Administration.index())
 
   }
 
 
-  def save  = withUser {
+  def save = withUser {
     username =>
       request =>
-      implicit val req = request
-      postForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.administration.create(formWithErrors)),
-        post => {
-          Post.create(post)
-          Redirect(routes.Administration.index())
-        }
-      )
+        implicit val req = request
+        postForm.bindFromRequest.fold(
+          formWithErrors => BadRequest(views.html.administration.create(formWithErrors)),
+          post => {
+            PostDao.create(post)
+            Redirect(routes.Administration.index())
+          }
+        )
   }
 
 
   def imageDelete(id: Long, idArticle: Long) = withUser {
     username =>
       request =>
-      implicit val req = request
-      Image.deleteById(id)
-      Redirect(routes.Administration.edit(idArticle))
+        implicit val req = request
+        ImageDao.deleteById(id)
+        Redirect(routes.Administration.edit(idArticle))
   }
 
   def upload = withUser {
-    username =>request =>
+    username => request =>
       implicit val req = request
       val pictureBody = request.body.asMultipartFormData
       pictureBody.map {
@@ -86,8 +85,8 @@ object Administration extends Controller with Secured {
           theFile.file("picture").map {
             picture =>
               val data = Files.toByteArray(picture.ref.file)
-              val image = new Image(NotAssigned, picture.contentType.get, data, picture.filename)
-              Image.create(image)
+              val image = new Image(None, picture.contentType.get, data, picture.filename)
+              ImageDao.create(image)
 
               Redirect(routes.Administration.index).flashing("success" -> "Fichier ajoute");
           }.getOrElse {
@@ -106,69 +105,30 @@ object Administration extends Controller with Secured {
 
   def restore = TODO
 
-  /** Authenticated {
-    (user, request) =>
-      implicit val req = request
-
-
-
-
-      implicit object PostReads extends Reads[LightPost] {
-        def reads(json: JsValue): LightPost = {
-          LightPost(
-            (json \ "post" \ "title").as[String],
-            (json \ "post" \ "url").as[String],
-            (json \ "post" \ "chapeau").as[Option[String]],
-            (json \ "post" \ "content").as[Option[String]],
-            (json \ "post" \ "hits").as[Option[Long]],
-            toDate((json \ "post" \ "postedAt").as[String]),
-            (json \ "post" \ "published").as[Boolean]
-          )
-
-
-        }
-      }
-
-      val multipartFormData = request.body.asMultipartFormData
-      multipartFormData.map {
-        theFile =>
-          theFile.file("post").map {
-            post =>
-              val jsValue = Json.parse(Source.fromFile(post.ref.file).mkString)
-
-              jsValue \ "post"
-              LightPost.create(jsValue.as[LightPost])
-            //        Redirect(routes.Administration.index())
-          }.getOrElse {
-            BadRequest("Probleme lors de l ajout du fichier")
-          }
-      }
-      Redirect(routes.Administration.index()).flashing("success"-> "fichier ajouté")
-  }     **/
 
   def update(id: Long) = withUser {
     username =>
       request =>
-      implicit val req = request
-      postForm.bindFromRequest.fold(
-        formWithErrors =>
-          BadRequest(views.html.administration.edit(id, formWithErrors)),
-        post => {
-          Post.update(id, post)
-          Redirect(routes.Administration.index())
-        }
-      )
+        implicit val req = request
+        postForm.bindFromRequest.fold(
+          formWithErrors =>
+            BadRequest(views.html.administration.edit(id, formWithErrors)),
+          post => {
+            PostDao.update(id, post)
+            Redirect(routes.Administration.index())
+          }
+        )
   }
 
-  def edit(id: Long)= withUser {
+  def edit(id: Long) = withUser {
     username =>
       request =>
-      Post.findById(id).map {
-        post =>
-          Ok(views.html.administration.edit(post.id.get, postForm.fill(post)))
-      }.getOrElse(
-        NotFound("404 - not found")
-      )
+        PostDao.findById(id).map {
+          post =>
+            Ok(views.html.administration.edit(post.id.get, postForm.fill(post)))
+        }.getOrElse(
+          NotFound("404 - not found")
+        )
   }
 
 
