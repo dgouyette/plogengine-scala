@@ -5,10 +5,9 @@
 
 # Home page
 GET     /                           controllers.Application.index(p:Int ?= 0)
-GET     /login                      controllers.Application.login
-GET     /logout                      controllers.Application.logout
-POST    /loginPost                  controllers.Application.loginPost
-GET    /openIDCallback              controllers.Application.openIDCallback
+GET     /login                                                   controllers.AuthController.login
+POST    /authent                                                 controllers.AuthController.authenticate
+GET     /logout                                                  controllers.AuthController.logout
 GET     /feed/                      controllers.Application.feed
 GET     /admin                      controllers.Administration.index
 GET     /admin/create               controllers.Administration.create

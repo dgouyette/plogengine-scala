@@ -6,35 +6,12 @@ import play.api.mvc._
 import play.api.data.Forms._
 import com.google.common.io.Files
 import scala.Long
-import io.Source
-import play.api.libs.json.{Reads, JsValue, Json}
 import anorm._
 import java.util.Date
 import java.text.SimpleDateFormat
 import models._
-import utils.ElasticClient
 
-
-/**
- *
- * User: damiengouyette
- */
-
-object Administration extends Controller {
-
-  case class AuthenticatedRequest(val user: User, request: Request[AnyContent]
-                                   ) extends WrappedRequest(request)
-
-
-  def Authenticated(f: (User, Request[AnyContent]) => Result) = {
-    Action {
-      request =>
-        request.session.get("email").flatMap(u => User.findByEmail(u)).map {
-          user =>
-            f(user, request)
-        }.getOrElse(Unauthorized("401 - Unauthorized"))
-    }
-  }
+object Administration extends Controller with Secured {
 
 
   val postForm = Form(
@@ -50,42 +27,37 @@ object Administration extends Controller {
     )(Post.apply)(Post.unapply)
   )
 
-  def viderCache=TODO
+  def viderCache() = TODO
 
 
+  def clearIndexes() = TODO
 
-
-  def clearIndexes = Authenticated {
-    (user, request) =>
-      ElasticClient.clearIndex
-    Ok("Index vidé")
-  }
-
-  def create = Authenticated {
-    (user, request) =>
+  def create() = withUser {
+    username =>
+      request =>
       Ok(views.html.administration.create(postForm))
   }
 
-  def index = Authenticated {
-    (user, request) =>
-
-
+  def index()  = withUser {
+    username =>request =>
       val posts = Post.findAll()
       val images = Image.findAll()
       Ok(views.html.administration.index(posts, images, postForm))
   }
 
 
-  def delete(id: Long) = Authenticated {
-    (user, request) =>
+  def delete(id: Long) = withUser {
+    username =>
+      request =>
       Post.delete(id)
       Redirect(routes.Administration.index())
 
   }
 
 
-  def save = Authenticated {
-    (user, request) =>
+  def save  = withUser {
+    username =>
+      request =>
       implicit val req = request
       postForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.administration.create(formWithErrors)),
@@ -97,15 +69,16 @@ object Administration extends Controller {
   }
 
 
-  def imageDelete(id: Long, idArticle: Long) = Authenticated {
-    (user, request) =>
+  def imageDelete(id: Long, idArticle: Long) = withUser {
+    username =>
+      request =>
       implicit val req = request
       Image.deleteById(id)
       Redirect(routes.Administration.edit(idArticle))
   }
 
-  def upload = Authenticated {
-    (user, request) =>
+  def upload = withUser {
+    username =>request =>
       implicit val req = request
       val pictureBody = request.body.asMultipartFormData
       pictureBody.map {
@@ -131,7 +104,9 @@ object Administration extends Controller {
     sdf.parse(in)
   }
 
-  def restore = TODO/**Authenticated {
+  def restore = TODO
+
+  /** Authenticated {
     (user, request) =>
       implicit val req = request
 
@@ -171,8 +146,9 @@ object Administration extends Controller {
       Redirect(routes.Administration.index()).flashing("success"-> "fichier ajouté")
   }     **/
 
-  def update(id: Long) = Authenticated {
-    (user, request) =>
+  def update(id: Long) = withUser {
+    username =>
+      request =>
       implicit val req = request
       postForm.bindFromRequest.fold(
         formWithErrors =>
@@ -184,15 +160,14 @@ object Administration extends Controller {
       )
   }
 
-  def edit(id: Long) = Authenticated {
-    (user, request) =>
-
-
+  def edit(id: Long)= withUser {
+    username =>
+      request =>
       Post.findById(id).map {
         post =>
           Ok(views.html.administration.edit(post.id.get, postForm.fill(post)))
       }.getOrElse(
-        NotFound("Not found")
+        NotFound("404 - not found")
       )
   }
 

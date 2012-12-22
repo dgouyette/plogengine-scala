@@ -21,9 +21,7 @@ case class PostBackup(post: LightPost, images: Seq[Image])
 
 case class Image(id: Pk[Long], contenttype: String, data: Array[Byte], filename: String)
 
-case class Authent(openid_identifier: String, action: String)
 
-case class User(id: Pk[Long], firstName: String, lastName: String, courriel: String)
 
 
 /**
@@ -41,7 +39,7 @@ object LightPost {
 }
 
 object Post {
-  def incrementHits(postId: Pk[Long]){
+  def incrementHits(postId: Pk[Long]) {
     DB.withConnection {
       implicit connection =>
         SQL("update post set hits=hits+1 where id = {id}")
@@ -172,29 +170,6 @@ object Post {
 }
 
 
-object User {
-
-
-  val simpleUser = {
-    get[Pk[Long]]("id") ~
-      get[String]("courriel") ~
-      get[String]("firstName") ~
-      get[String]("lastName") map {
-      case id ~ courriel ~ firstName ~ lastName => User(id, courriel, firstName, lastName)
-    }
-  }
-
-
-  def findByEmail(email: String): Option[User] = {
-    DB.withConnection {
-      implicit connection =>
-        SQL("select * from utilisateur  WHERE courriel = {param}")
-          .on('param -> email)
-          .as(simpleUser.singleOpt)
-    }
-  }
-
-}
 
 
 object Image {

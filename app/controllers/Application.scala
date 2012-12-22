@@ -3,15 +3,10 @@ package controllers
 import play.api.mvc._
 import play.api.Play.current
 import play.api.cache.Cached
-import utils.{ElasticClient, TextileHelper}
+import utils.TextileHelper
 import com.sun.syndication.io.SyndFeedOutput
 import java.text.SimpleDateFormat
-import play.api.data.Form
-import play.api.data.Forms._
-import models.{Post, Authent, Image}
-import play.api.libs.openid.OpenID
-import play.api.Logger
-import play.api.libs.concurrent.{Thrown, Redeemed}
+import models.{Post, Image}
 import com.sun.syndication.feed.synd.{SyndContentImpl, SyndEntryImpl, SyndFeedImpl}
 import java.util.ArrayList
 
@@ -19,60 +14,14 @@ import java.util.ArrayList
 object Application extends Controller {
 
 
-  val authentForm = Form(
-    mapping(
-      "openid_identifier" -> nonEmptyText,
-      "action" -> nonEmptyText
-    )(Authent.apply)(Authent.unapply)
-  )
 
+  def index(page: Int) =
+    Action {
+      implicit request =>
+        val posts = Post.findAllPublished(page)
+        Ok(views.html.index(posts, request.session.get("email").isEmpty))
+    }
 
-  def index(page: Int) = Action {
-    implicit request =>
-      val posts = Post.findAllPublished(page)
-      Ok(views.html.index(posts, request.session.get("email").isEmpty))
-  }
-
-
-  def logout = Action {
-    Redirect(routes.Application.index()).withNewSession
-  }
-
-  def loginPost = TODO/**Action {
-    implicit request =>
-      Form(single(
-        "openid_identifier" -> nonEmptyText
-      )).bindFromRequest.fold(
-      error => {
-        Logger.info("bad request " + error.toString)
-        BadRequest(error.toString)
-      }, {
-        case (openid) => AsyncResult(OpenID.redirectURL(openid, routes.Application.openIDCallback.absoluteURL(), Seq("email" -> "http://schema.openid.net/contact/email", "firstName" -> "http://openid.net/schema/namePerson/first", "lastName" -> "http://openid.net/schema/namePerson/last"))
-          .extend(_.value match {
-          case Redeemed(url) => Redirect(url)
-          case Thrown(t) => Redirect(routes.Application.login)
-        }))
-      }
-      )
-  }    **/
-
-
-  def openIDCallback = TODO /**Action {
-    implicit request =>
-      AsyncResult(
-        OpenID.verifiedId.extend(_.value match {
-          case Redeemed(info) =>
-            Redirect(routes.Administration.index).withSession("email" -> info.attributes.get("email").get)
-          case Thrown(t) => {
-            Redirect(routes.Application.login)
-
-          }
-        }))
-  }        **/
-
-  def login = Action {
-    Ok(views.html.login())
-  }
 
 
   //TODO faire un redirect permanent vers l'autre methode show
@@ -80,6 +29,7 @@ object Application extends Controller {
     Action {
       implicit request =>
         println("showByDateAndUrlSimple")
+        println("url => " + url)
         Post.findByUrl(url).map {
           post =>
             Post.incrementHits(post.id)
@@ -93,12 +43,9 @@ object Application extends Controller {
   def showByDateAndUrl(annee: String, mois: String, jour: String, url: String) =
     Action {
       implicit request =>
-        println("showByDateAndUrl")
-
         Post.findByUrl(url).map {
           post =>
             Post.incrementHits(post.id)
-            ElasticClient.indexPost(post)
             Ok(views.html.show(post, request.session.get("email").isEmpty))
         }.getOrElse(
           NotFound("Article non trouve")

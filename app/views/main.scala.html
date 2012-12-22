@@ -60,14 +60,14 @@
                             </li>
                             @if(!loggedin) {
                             <li>
-                                <a href="@routes.Administration.index">Admin</a>
+                                <a href="@routes.Administration.index()">Admin</a>
                             </li>
                             <li>
-                                <a href="@routes.Application.logout">Logout</a>
+                                <a href="@routes.AuthController.logout()">Logout</a>
                             </li>
                             }else{
                             <li>
-                                <a href="@routes.Application.login">Login</a>
+                                <a href="@routes.AuthController.login()">Login</a>
                             </li>
                             }
                         </ul>

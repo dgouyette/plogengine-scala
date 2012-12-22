@@ -1,32 +1,60 @@
+@(loginForm: Form[Option[Account]])(implicit flash: Flash)
+<!DOCTYPE html>
+
+@import helper._
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
 
 
-@main("", true) {
+<html>
+<head>
+    <title>Login</title>
 
-<div class="grid_8 openIdPanel">
 
-    <!-- Simple OpenID Selector -->
-    @helper.form(action = routes.Application.loginPost(), 'id -> "openid_form") {
+    <link rel="stylesheet" type="text/css" media="screen" href='@routes.Assets.at("stylesheets/bootstrap.min.css")'/>
+    <link rel="stylesheet" type="text/css" media="screen"
+          href='@routes.Assets.at("stylesheets/bootstrap-responsive.min.css")'/>
+    <script src='@routes.Assets.at("javascripts/jquery-1.7.1.min.js")' type="text/javascript"></script>
+    <script src='@routes.Assets.at("javascripts/bootstrap.min.js")' type="text/javascript"></script>
 
-    <input type="hidden" name="action" value="verify"/>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#email').focus();
+        });
+    </script>
+</head>
+<body>
 
-    <fieldset>
-        <legend>Acc&egrave;s priv&eacute;</legend>
-        <div id="openid_choice">
 
-            <div id="openid_btns"></div>
-        </div>
-        <div id="openid_input_area">
-            <input id="openid_identifier" name="openid_identifier" type="text" value="http://"/>
-            <input id="openid_submit" type="submit" value="Sign-In"/>
-        </div>
-        <noscript>
-            <p>OpenID is service that allows you to log-on to many different websites using a single indentity.
-                Find out <a href="http://openid.net/what/">more about OpenID</a> and <a href="http://openid.net/get/">how
-                    to get an OpenID enabled account</a>.</p>
-        </noscript>
-    </fieldset>
+<div class="row">
+    <div class="span6">&#160;</div>
+    <div class="span6">
+
+
+        <p>&#160;</p>
+
+        <p>&#160;</p>
+
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Identification</h3>
+            </div>
+
+        @helper.form(routes.AuthController.authenticate, 'class -> "form-horizontal") {
+            <p>&#160;</p>
+            @inputText(loginForm("email"), '_label -> "Email", 'required -> "required")
+            @inputPassword(loginForm("password"), '_label -> "Password")
+            <div class="control-group">
+                <div class="controls">
+                    <button class="btn btn-primary">Valider</button>
+                    <a href="@routes.Application.index()" class="btn">Annuler</a>
+                </div>
+            </div>
+
+
+        }
+            </div>
+    </div>
 </div>
 
-
-}
-}
+</body>
+</html>
