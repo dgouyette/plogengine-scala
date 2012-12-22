@@ -20,7 +20,7 @@ object Administration extends Controller with Secured {
       "url" -> nonEmptyText,
       "chapeau" -> optional(nonEmptyText),
       "content" -> optional(text()),
-      "hits" -> optional(longNumber),
+      "hits" -> longNumber,
       "postedAt" -> sqlDate("yyyy-MM-dd"),
       "published" -> boolean
     )(Post.apply)(Post.unapply)
