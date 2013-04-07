@@ -12,6 +12,7 @@ GET     /feed/                      controllers.Application.feed
 GET     /admin                      controllers.Administration.index
 GET     /admin/create               controllers.Administration.create
 GET     /admin/edit/:id             controllers.Administration.edit(id:Long)
+GET     /admin/export/           controllers.Administration.export()
 GET     /admin/imageDelete:id       controllers.Administration.imageDelete(id:Long, idArticle : Long)
 GET     /admin/delete/:id           controllers.Administration.delete(id:Long)
 POST    /admin/save/                controllers.Administration.save()

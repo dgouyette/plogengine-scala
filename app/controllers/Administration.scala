@@ -9,6 +9,10 @@ import scala.Long
 import java.util.Date
 import java.text.SimpleDateFormat
 import models._
+import play.api.libs.json.Json
+import scala.Some
+import models.Image
+import models.Post
 
 object Administration extends Controller with Secured {
 
@@ -45,6 +49,14 @@ object Administration extends Controller with Secured {
   }
 
 
+  def export() = withUser {
+    username => request =>
+      implicit val postWrites = Json.writes[Post]
+      val posts = PostDao.findAll()
+      Ok(Json.toJson(posts)).as(JSON)
+  }
+
+
   def delete(id: Long) = withUser {
     username =>
       request =>
@@ -59,7 +71,7 @@ object Administration extends Controller with Secured {
       request =>
         implicit val req = request
         postForm.bindFromRequest.fold(
-          formWithErrors => BadRequest(views.html.administration.create(formWithErrors)),
+          formWithErrors => BadRequest(formWithErrors.errorsAsJson),
           post => {
             PostDao.create(post)
             Redirect(routes.Administration.index())
