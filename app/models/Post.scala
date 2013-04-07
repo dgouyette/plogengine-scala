@@ -22,7 +22,7 @@ case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
 }
 
 
-case class Post(id: Option[Long], title: String, url: String, chapeau: Option[String], content: Option[String], hits: Long, postedAt: Date, published: Boolean)
+case class Post(id: Option[Long], title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean)
 
 
 object PostDao extends Table[Post]("post") {
@@ -57,7 +57,7 @@ object PostDao extends Table[Post]("post") {
   val byId = createFinderBy(_.id)
   val byUrl = createFinderBy(_.url)
 
-  def * = id.? ~ title ~ url ~ chapeau.? ~ content.? ~ hits ~ postedAt ~ published <>(Post, Post.unapply _)
+  def * = id.? ~ title ~ url ~ chapeau.? ~ content.? ~ hits.? ~ postedAt ~ published <>(Post, Post.unapply _)
 
   //def autoInc = id.? ~ title ~ url ~ chapeau.? ~ content.? ~ hits.? ~ postedAt ~ published <>(Post, Post.unapply _) returning id
 
