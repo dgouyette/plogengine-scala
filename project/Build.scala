@@ -15,6 +15,7 @@ object ApplicationBuild extends Build {
     "rome" % "rome" % "1.0",
     "org.clapper" % "markwrap_2.10" % "0.5.5",
     "mysql" % "mysql-connector-java" % "5.1.21",
+    "postgresql" % "postgresql" % "9.0-801.jdbc4",
     "commons-io" % "commons-io" % "2.0.1",
     "org.mindrot" % "jbcrypt" % "0.3m",
     "com.typesafe" %% "slick" % "1.0.0-RC1",
