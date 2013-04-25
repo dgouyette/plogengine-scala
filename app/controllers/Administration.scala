@@ -10,13 +10,15 @@ import anorm._
 import java.util.Date
 import java.text.SimpleDateFormat
 import models._
+import play.api.libs.json.{JsString, Writes, Json}
+import org.joda.time.DateTime
 
 object Administration extends Controller with Secured {
 
 
   val postForm = Form(
     mapping(
-      "id" -> ignored(NotAssigned: Pk[Long]),
+      "id" -> optional(longNumber),
       "title" -> nonEmptyText,
       "url" -> nonEmptyText,
       "chapeau" -> optional(nonEmptyText),
@@ -35,11 +37,11 @@ object Administration extends Controller with Secured {
   def create() = withUser {
     username =>
       request =>
-      Ok(views.html.administration.create(postForm))
+        Ok(views.html.administration.create(postForm))
   }
 
-  def index()  = withUser {
-    username =>request =>
+  def index() = withUser {
+    username => request =>
       val posts = Post.findAll()
       val images = Image.findAll()
       Ok(views.html.administration.index(posts, images, postForm))
@@ -49,36 +51,48 @@ object Administration extends Controller with Secured {
   def delete(id: Long) = withUser {
     username =>
       request =>
-      Post.delete(id)
-      Redirect(routes.Administration.index())
+        Post.delete(id)
+        Redirect(routes.Administration.index())
+
+  }
+
+  def export = withUser {
+    username =>
+      request =>
+
+        implicit val dateWrites = Writes[Date](bd => JsString(new DateTime(bd).toString("dd/MM/yyyy")))
+        implicit val datetimeWrites = Writes[DateTime](bd => JsString(bd.toString("dd/MM/yyyy")))
+
+        implicit val postWrites = Json.writes[Post]
+        Ok(Json.toJson(Post.findAll())).as(JSON)
 
   }
 
 
-  def save  = withUser {
+  def save = withUser {
     username =>
       request =>
-      implicit val req = request
-      postForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.administration.create(formWithErrors)),
-        post => {
-          Post.create(post)
-          Redirect(routes.Administration.index())
-        }
-      )
+        implicit val req = request
+        postForm.bindFromRequest.fold(
+          formWithErrors => BadRequest(views.html.administration.create(formWithErrors)),
+          post => {
+            Post.create(post)
+            Redirect(routes.Administration.index())
+          }
+        )
   }
 
 
   def imageDelete(id: Long, idArticle: Long) = withUser {
     username =>
       request =>
-      implicit val req = request
-      Image.deleteById(id)
-      Redirect(routes.Administration.edit(idArticle))
+        implicit val req = request
+        Image.deleteById(id)
+        Redirect(routes.Administration.edit(idArticle))
   }
 
   def upload = withUser {
-    username =>request =>
+    username => request =>
       implicit val req = request
       val pictureBody = request.body.asMultipartFormData
       pictureBody.map {
@@ -149,26 +163,26 @@ object Administration extends Controller with Secured {
   def update(id: Long) = withUser {
     username =>
       request =>
-      implicit val req = request
-      postForm.bindFromRequest.fold(
-        formWithErrors =>
-          BadRequest(views.html.administration.edit(id, formWithErrors)),
-        post => {
-          Post.update(id, post)
-          Redirect(routes.Administration.index())
-        }
-      )
+        implicit val req = request
+        postForm.bindFromRequest.fold(
+          formWithErrors =>
+            BadRequest(views.html.administration.edit(id, formWithErrors)),
+          post => {
+            Post.update(id, post)
+            Redirect(routes.Administration.index())
+          }
+        )
   }
 
-  def edit(id: Long)= withUser {
+  def edit(id: Long) = withUser {
     username =>
       request =>
-      Post.findById(id).map {
-        post =>
-          Ok(views.html.administration.edit(post.id.get, postForm.fill(post)))
-      }.getOrElse(
-        NotFound("404 - not found")
-      )
+        Post.findById(id).map {
+          post =>
+            Ok(views.html.administration.edit(post.id.get, postForm.fill(post)))
+        }.getOrElse(
+          NotFound("404 - not found")
+        )
   }
 
 

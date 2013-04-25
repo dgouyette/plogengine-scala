@@ -13,7 +13,7 @@ import anorm._
 import scala.Predef._
 
 
-case class Post(id: Pk[Long], title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean)
+case class Post(id: Option[Long], title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean)
 
 case class LightPost(title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean)
 
@@ -34,12 +34,12 @@ case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
 
 object LightPost {
   def create(post: LightPost) = {
-    Post.create(Post(NotAssigned, post.title, post.url, post.chapeau, post.content, post.hits, post.postedAt, post.published))
+    Post.create(Post(None, post.title, post.url, post.chapeau, post.content, post.hits, post.postedAt, post.published))
   }
 }
 
 object Post {
-  def incrementHits(postId: Pk[Long]) {
+  def incrementHits(postId: Option[Long]) {
     DB.withConnection {
       implicit connection =>
         SQL("update post set hits=hits+1 where id = {id}")
@@ -60,7 +60,7 @@ object Post {
 
 
   val simple = {
-    get[Pk[Long]]("id") ~
+    get[Option[Long]]("id") ~
       get[String]("title") ~
       get[String]("url") ~
       get[Option[String]]("chapeau") ~
