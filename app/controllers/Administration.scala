@@ -61,7 +61,7 @@ object Administration extends Controller with Secured {
     username =>
       request =>
         PostDao.delete(id)
-        Redirect(routes.Administration.index())
+        Redirect(routes.Administration.index()).flashing("success" -> "delete.success");
 
   }
 
@@ -74,7 +74,7 @@ object Administration extends Controller with Secured {
           formWithErrors => BadRequest(formWithErrors.errorsAsJson),
           post => {
             PostDao.create(post)
-            Redirect(routes.Administration.index())
+            Redirect(routes.Administration.index()).flashing("success" -> "save.success");
           }
         )
   }
@@ -110,10 +110,6 @@ object Administration extends Controller with Secured {
       }
   }
 
-  def toDate(in: String): Date = {
-    val sdf = new SimpleDateFormat("yyy-MM-dd");
-    sdf.parse(in)
-  }
 
   def restore = TODO
 

@@ -90,7 +90,13 @@ object PostDao extends Table[Post]("post") {
   }
 
   def findByUrl(url: String): Option[Post] = database withSession {
-    byUrl(url).firstOption
+    val firstOption: Option[Post] = byUrl(url).firstOption
+    firstOption match {
+      case Some(p) => PostDao.incrementHits(p.id)
+      case None =>
+
+    }
+    firstOption
   }
 
 }

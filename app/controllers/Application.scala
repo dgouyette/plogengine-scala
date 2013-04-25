@@ -27,11 +27,8 @@ object Application extends Controller {
   def showByDateAndUrlSimple(url: String) =
     Action {
       implicit request =>
-        println("showByDateAndUrlSimple")
-        println("url => " + url)
         PostDao.findByUrl(url).map {
           post =>
-            PostDao.incrementHits(post.id)
             Ok(views.html.show(post, request.session.get("email").isEmpty))
         }.getOrElse(
           NotFound("Article non trouve")
@@ -44,7 +41,6 @@ object Application extends Controller {
       implicit request =>
         PostDao.findByUrl(url).map {
           post =>
-            PostDao.incrementHits(post.id)
             Ok(views.html.show(post, request.session.get("email").isEmpty))
         }.getOrElse(
           NotFound("Article non trouve")
