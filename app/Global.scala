@@ -1,4 +1,4 @@
-import models.{AccountDao, Account}
+import models.AccountDao
 import play.api._
 
 
@@ -10,7 +10,10 @@ object Global extends GlobalSettings {
     Logger.info("app.mode = %s".format(app.mode))
     if (app.mode == Mode.Dev) {
       Logger.info("mode dev => creation d'un utilisateur de demo")
-      AccountDao.create(Account(None, "demo@demo.fr", "demo"))
+      //AccountDao.create(Account(None, "demo@demo.fr", "demo"))
+
+      print(app)
+      AccountDao.ddl.createStatements
     }
   }
 

@@ -1,5 +1,5 @@
 
-object IndexService {
+object ndexService {
 
 
 
