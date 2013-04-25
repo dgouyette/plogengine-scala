@@ -43,9 +43,10 @@ object Account {
   }
 
   def authenticate(email: String, password: String): Option[Account] = {
-    findByEmail(email.toLowerCase.trim).filter {
+   findByEmail(email.toLowerCase.trim).filter {
       account => BCrypt.checkpw(password, account.password)
     }
+    //findByEmail(email)
   }
 
   def findByEmail(email: String): Option[Account] = {
