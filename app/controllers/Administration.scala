@@ -8,7 +8,7 @@ import com.google.common.io.Files
 import scala.Long
 import java.util.Date
 import models._
-import play.api.libs.json.{Reads, JsString, Writes, Json}
+import play.api.libs.json.{JsString, Writes, Json}
 import models.Image
 import models.Post
 import org.joda.time.DateTime
@@ -16,7 +16,7 @@ import org.joda.time.DateTime
 object Administration extends Controller with Secured {
 
 
-  val dateFormat = "dd/MM/yyyy"
+  val dateFormat = "dd-MM-yyyy"
 
   val postForm = Form(
     mapping(
@@ -40,6 +40,18 @@ object Administration extends Controller with Secured {
       val articleJson = request.body
       val post = articleJson.as[Post]
       PostDao.create(post)
+      Ok("")
+  }
+
+  def restoreList() = Action(parse.json(maxLength = 1024 * 10000)) {
+    request =>
+      implicit val postReads = Json.reads[Post]
+
+      val articleJson = request.body
+      val post = articleJson.as[List[Post]]
+
+      //post.map(p => PostDao.create(p))
+
       Ok("")
   }
 
