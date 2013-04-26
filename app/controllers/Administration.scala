@@ -60,8 +60,8 @@ object Administration extends Controller with Secured {
     username =>
       request =>
 
-        implicit val dateWrites = Writes[Date](bd => JsString(new DateTime(bd).toString("yyyy/MM/dd")))
-        implicit val datetimeWrites = Writes[DateTime](bd => JsString(bd.toString("yyyy/MM/dd")))
+        implicit val dateWrites = Writes[Date](bd => JsString(new DateTime(bd).toString("yyyy-MM-dd")))
+        implicit val datetimeWrites = Writes[DateTime](bd => JsString(bd.toString("yyyy-MM-dd")))
 
         implicit val postWrites = Json.writes[Post]
         Ok(Json.toJson(Post.findAll())).as(JSON)
