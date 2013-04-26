@@ -4,7 +4,7 @@ import play.api.Play.current
 
 import scala.slick.session.Database.threadLocalSession
 import scala.slick.session.Database
-import scala.slick.driver.PostgresDriver.simple._
+import scala.slick.driver.MySQLDriver.simple._
 import org.mindrot.jbcrypt.BCrypt
 import play.api.db.DB
 
