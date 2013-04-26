@@ -12,14 +12,14 @@ GET     /feed/                      controllers.Application.feed
 GET     /admin                      controllers.Administration.index
 GET     /admin/create               controllers.Administration.create
 GET     /admin/edit/:id             controllers.Administration.edit(id:Long)
-GET     /admin/export/           controllers.Administration.export()
 GET     /admin/imageDelete:id       controllers.Administration.imageDelete(id:Long, idArticle : Long)
 GET     /admin/delete/:id           controllers.Administration.delete(id:Long)
 POST    /admin/save/                controllers.Administration.save()
 POST    /admin/update/              controllers.Administration.update(id:Long)
 POST    /admin/upload/           controllers.Administration.upload
-POST    /admin/post/restore         controllers.Administration.restore
 GET    /admin/index/clear         controllers.Administration.clearIndexes
+POST    /admin/restore/         controllers.Administration.restore
+GET     /admin/export/               controllers.Administration.export
 
 GET     /:url           controllers.Application.showByDateAndUrlSimple(url: String)
 GET     /$annee<[1-9][0-9][0-9][0-9]>/$mois<0[1-9]|1[0-2]>/$jour<0[1-9]|[1-2][0-9]|3[0-1]>/:url           controllers.Application.showByDateAndUrl(annee: String, mois : String, jour : String, url: String)

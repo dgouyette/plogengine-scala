@@ -7,15 +7,16 @@ import play.api.data.Forms._
 import com.google.common.io.Files
 import scala.Long
 import java.util.Date
-import java.text.SimpleDateFormat
 import models._
-import play.api.libs.json.Json
-import scala.Some
+import play.api.libs.json.{Reads, JsString, Writes, Json}
 import models.Image
 import models.Post
+import org.joda.time.DateTime
 
 object Administration extends Controller with Secured {
 
+
+  val dateFormat = "dd/MM/yyyy"
 
   val postForm = Form(
     mapping(
@@ -25,12 +26,34 @@ object Administration extends Controller with Secured {
       "chapeau" -> optional(nonEmptyText),
       "content" -> optional(text()),
       "hits" -> optional(longNumber),
-      "postedAt" -> sqlDate("yyyy-MM-dd"),
+      "postedAt" -> sqlDate(dateFormat),
       "published" -> boolean
     )(Post.apply)(Post.unapply)
   )
 
   def viderCache() = TODO
+
+  def restore() = Action(parse.json) {
+    request =>
+      implicit val postReads = Json.reads[Post]
+
+      val articleJson = request.body
+      val post = articleJson.as[Post]
+      PostDao.create(post)
+      Ok("")
+  }
+
+  def export = withUser {
+    username =>
+      request =>
+
+        implicit val dateWrites = Writes[Date](bd => JsString(new DateTime(bd).toString(dateFormat)))
+        implicit val datetimeWrites = Writes[DateTime](bd => JsString(bd.toString(dateFormat)))
+
+        implicit val postWrites = Json.writes[Post]
+        Ok(Json.toJson(PostDao.findAll())).as(JSON)
+
+  }
 
 
   def clearIndexes() = TODO
@@ -46,14 +69,6 @@ object Administration extends Controller with Secured {
       val posts = PostDao.findAll()
       val images = ImageDao.findAll()
       Ok(views.html.administration.index(posts, images, postForm))
-  }
-
-
-  def export() = withUser {
-    username => request =>
-      implicit val postWrites = Json.writes[Post]
-      val posts = PostDao.findAll()
-      Ok(Json.toJson(posts)).as(JSON)
   }
 
 
@@ -109,9 +124,6 @@ object Administration extends Controller with Secured {
         BadRequest("Probleme lors de l ajout du fichier")
       }
   }
-
-
-  def restore = TODO
 
 
   def update(id: Long) = withUser {
