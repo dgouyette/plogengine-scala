@@ -67,7 +67,9 @@ object PostDao extends Table[Post]("post") {
 
   def findAllPublished(page: Int) = database withSession {
     val posts = (for (c <- PostDao.sortBy(_.postedAt)) yield c).list.reverse
-    Page(posts, page, 0, 1)
+
+
+    Page(posts.filter(_.published), page, 0, 1)
 
   }
 

@@ -43,17 +43,6 @@ object Administration extends Controller with Secured {
       Ok("")
   }
 
-  def restoreList() = Action(parse.json(maxLength = 1024 * 10000)) {
-    request =>
-      implicit val postReads = Json.reads[Post]
-
-      val articleJson = request.body
-      val post = articleJson.as[List[Post]]
-
-      //post.map(p => PostDao.create(p))
-
-      Ok("")
-  }
 
   def export = withUser {
     username =>

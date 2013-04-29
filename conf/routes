@@ -19,7 +19,6 @@ POST    /admin/update/              controllers.Administration.update(id:Long)
 POST    /admin/upload/           controllers.Administration.upload
 GET    /admin/index/clear         controllers.Administration.clearIndexes
 POST    /admin/restore/         controllers.Administration.restore
-POST    /admin/restore/list/         controllers.Administration.restoreList
 GET     /admin/export/               controllers.Administration.export
 
 GET     /:url           controllers.Application.showByDateAndUrlSimple(url: String)
