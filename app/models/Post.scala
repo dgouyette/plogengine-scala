@@ -59,7 +59,6 @@ object PostDao extends Table[Post]("post") {
 
   def * = id.? ~ title ~ url ~ chapeau.? ~ content.? ~ hits.? ~ postedAt ~ published <>(Post, Post.unapply _)
 
-  //def autoInc = id.? ~ title ~ url ~ chapeau.? ~ content.? ~ hits.? ~ postedAt ~ published <>(Post, Post.unapply _) returning id
 
   def findAll() = database withSession {
     (for (c <- PostDao.sortBy(_.postedAt)) yield c).list.reverse
@@ -68,10 +67,13 @@ object PostDao extends Table[Post]("post") {
   def findAllPublished(page: Int) = database withSession {
     val posts = (for (c <- PostDao.sortBy(_.postedAt)) yield c).list.reverse
 
-
-    Page(posts.filter(_.published), page, 0, 1)
-
+    val pageSize = 5
+    val offset = pageSize * page
+    Page(posts.filter(_.published).drop(offset).take(pageSize), page, offset, posts.size)
   }
+
+
+
 
 
   def delete(id: Long) = database withSession {

@@ -19,6 +19,7 @@ object Application extends Controller {
     Action {
       implicit request =>
         val posts = PostDao.findAllPublished(page)
+
         Ok(views.html.index(posts, request.session.get("email").isEmpty))
     }
 
