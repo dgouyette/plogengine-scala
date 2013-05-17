@@ -29,27 +29,18 @@ object Application extends Controller {
 
   def search(q: String) = Action {
     implicit request =>
-
-      val query = queryString(q)
-
-      val response = searchArticles(query)
-
+      val response = searchArticles(queryString(q))
       if (response.getHits.getHits.isEmpty) {
-
-        val fuzzyQuery = QueryBuilders.fuzzyQuery("content", q)
-        val response = searchArticles(fuzzyQuery)
+        val response = searchArticles(QueryBuilders.fuzzyQuery("content", q))
         Ok(views.html.search(mapResponse(response), q, response))
       } else {
         Ok(views.html.search(mapResponse(response), q, response))
       }
-
-
-
   }
 
 
   def mapResponse(response: SearchResponse): List[PostLight] = {
-    val articlesSearched = response.getHits.getHits.map {
+    response.getHits.getHits.map {
       h => h.getSource.keySet()
         val title = h.getSource.get("title").toString
         val url = h.getSource.get("url").toString
@@ -58,7 +49,6 @@ object Application extends Controller {
         val postedAt = sdf.parse(h.getSource.get("postedAt").toString)
         PostLight(title, url, Some(chapeau), Some(content), postedAt)
     }.toList
-    articlesSearched
   }
 
   private def searchArticles(query: QueryBuilder): SearchResponse = {
