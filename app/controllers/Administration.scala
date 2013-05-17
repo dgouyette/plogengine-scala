@@ -13,7 +13,16 @@ import models.Image
 import models.Post
 import org.joda.time.DateTime
 
+import org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder
+
+import org.elasticsearch.client.transport.TransportClient
+import org.elasticsearch.common.transport.InetSocketTransportAddress
+
+
 object Administration extends Controller with Secured {
+
+
+  val client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("hotel-village-soleil.com", 9300))
 
 
   val dateFormat = "dd-MM-yyyy"
@@ -32,6 +41,28 @@ object Administration extends Controller with Secured {
   )
 
   def viderCache() = TODO
+
+
+  def indexSearch = withUser {
+    username =>
+      request =>
+        PostDao.findAll().map {
+          post =>
+
+            if (post.published) {
+              client.prepareIndex("articles", "article").setSource(jsonBuilder()
+                .startObject()
+                .field("chapeau", post.chapeau.getOrElse(""))
+                .field("url", post.url)
+                .field("postedAt", post.postedAt)
+                .field("title", post.title)
+                .field("content", post.content.getOrElse("")).endObject()
+              ).execute().actionGet()
+            }
+        }
+        Ok(s"index ok")
+
+  }
 
   def restore() = Action(parse.json) {
     request =>

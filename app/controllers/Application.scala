@@ -6,14 +6,17 @@ import play.api.cache.Cached
 import utils.TextileHelper
 import com.sun.syndication.io.SyndFeedOutput
 import java.text.SimpleDateFormat
-import models.{ImageDao, PostDao, Post, Image}
+import models.{PostLight, ImageDao, PostDao}
 import com.sun.syndication.feed.synd.{SyndContentImpl, SyndEntryImpl, SyndFeedImpl}
 import java.util.ArrayList
-import play.api._
+import org.elasticsearch.index.query.QueryBuilders._
+import org.elasticsearch.index.query.{QueryBuilder, QueryBuilders, QueryStringQueryBuilder}
+import org.elasticsearch.action.search.SearchResponse
 
 
 object Application extends Controller {
 
+  val sdf = new SimpleDateFormat("yyyy-MM-dd");
 
   def index(page: Int) =
     Action {
@@ -23,6 +26,50 @@ object Application extends Controller {
         Ok(views.html.index(posts, request.session.get("email").isEmpty))
     }
 
+
+  def search(q: String) = Action {
+    implicit request =>
+
+      val query = queryString(q)
+
+      val response = searchArticles(query)
+
+      if (response.getHits.getHits.isEmpty) {
+
+        val fuzzyQuery = QueryBuilders.fuzzyQuery("content", q)
+        val response = searchArticles(fuzzyQuery)
+        Ok(views.html.search(mapResponse(response), q, response))
+      } else {
+        Ok(views.html.search(mapResponse(response), q, response))
+      }
+
+
+
+  }
+
+
+  def mapResponse(response: SearchResponse): List[PostLight] = {
+    val articlesSearched = response.getHits.getHits.map {
+      h => h.getSource.keySet()
+        val title = h.getSource.get("title").toString
+        val url = h.getSource.get("url").toString
+        val chapeau = h.getSource.get("chapeau").toString
+        val content = h.getSource.get("content").toString
+        val postedAt = sdf.parse(h.getSource.get("postedAt").toString)
+        PostLight(title, url, Some(chapeau), Some(content), postedAt)
+    }.toList
+    articlesSearched
+  }
+
+  private def searchArticles(query: QueryBuilder): SearchResponse = {
+    val response = Administration.client
+      .prepareSearch("articles")
+      .setTypes("article")
+      .setQuery(query)
+      .execute()
+      .actionGet()
+    response
+  }
 
   //TODO faire un redirect permanent vers l'autre methode show
   def showByDateAndUrlSimple(url: String) =

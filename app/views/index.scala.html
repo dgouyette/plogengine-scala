@@ -18,7 +18,7 @@
         <h2>
         <a href='@routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url)'>@post.title</a>
     </h2>
-        le  @{new java.text.SimpleDateFormat("dd/MM/yyyy").format(post.postedAt)}
+        Le  @{new java.text.SimpleDateFormat("dd/MM/yyyy").format(post.postedAt)}  | @post.hits.getOrElse(0) hits
 
 
         <p>

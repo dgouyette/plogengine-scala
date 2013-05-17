@@ -24,12 +24,21 @@ case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
 
 case class Post(id: Option[Long], title: String, url: String, chapeau: Option[String], content: Option[String], hits: Option[Long], postedAt: Date, published: Boolean)
 
+case class PostLight(title: String, url: String,   chapeau: Option[String], content: Option[String], postedAt : java.util.Date)
+
 
 object PostDao extends Table[Post]("post") {
   def incrementHits(id: Option[Long]) = {
 
     id match {
-      case Some(i) =>
+      case Some(i) => PostDao.findById(i).map {
+        p =>
+
+          val hits: Long = (p.hits.getOrElse(0))
+          val updatedPost: Post = p.copy(hits = Some(hits.+(1)))
+          PostDao.update(i, updatedPost)
+
+      }
       case None =>
     }
   }
@@ -71,9 +80,6 @@ object PostDao extends Table[Post]("post") {
     val offset = pageSize * page
     Page(posts.filter(_.published).drop(offset).take(pageSize), page, offset, posts.size)
   }
-
-
-
 
 
   def delete(id: Long) = database withSession {

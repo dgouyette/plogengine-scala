@@ -1,0 +1,46 @@
+@(articleSearched: List[PostLight], q :String, response : org.elasticsearch.action.search.SearchResponse, loggedin: Boolean = false)
+
+@import utils.TextileHelper._
+@import play.api.data.format.Formats._
+@import java.text.SimpleDateFormat
+
+
+
+        @****************************************
+        * Helper generating navigation links *
+        ****************************************@
+    @link(newPage: Int) = @{
+        routes.Application.index(newPage)
+    }
+
+@main("", loggedin) {
+
+    <div class="alert alert-success">
+        Recherche de <strong>"@q"</strong>
+             = @response.getHits.getHits.size r&eacute;sultat(s) en @response.getTookInMillis ms
+    </div>
+    <hr/>
+
+    @articleSearched.map { post =>
+
+
+        <h2>
+            <a href='@routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url)'>@post.title</a>
+        </h2>
+
+    Le  @{new java.text.SimpleDateFormat("dd/MM/yyyy").format(post.postedAt)}
+
+
+        <p>
+        @Html(toHtml(post.chapeau))
+        </p>
+
+        <hr/>
+
+    }
+
+
+}
+
+
+

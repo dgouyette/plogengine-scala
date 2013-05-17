@@ -1,8 +1,7 @@
-@(title: String, loggedin : Boolean=false)(content: Html)
+@(title: String, loggedin: Boolean = false)(content: Html)
 
-@import play.api.Configuration
 
-<!DOCTYPE html>
+    <!DOCTYPE html>
 
 
 <html lang="fr">
@@ -14,102 +13,107 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/openid/openid-shadow.css")">
 
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("markitup/skins/markitup/style.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("markitup/sets/textile/style.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/shjs/0.6/sh_ide-eclipse.css")">
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("markitup/sets/textile/style.css")">
+<link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/shjs/0.6/sh_ide-eclipse.css")">
 
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("markitup/jquery.markitup.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("markitup/sets/textile/set.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/shjs/0.6/sh_main.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/jquery-1.7.1.min.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("markitup/jquery.markitup.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("markitup/sets/textile/set.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/shjs/0.6/sh_main.js")" type="text/javascript"></script>
 
-        <script src="@routes.Assets.at("javascripts/openid/openid-jquery.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/openid/openid-en.js")" type="text/javascript"></script>
-
-
+<script src="@routes.Assets.at("javascripts/openid/openid-jquery.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/openid/openid-en.js")" type="text/javascript"></script>
 
 
-        <script type="text/javascript">
+
+
+<script type="text/javascript">
 
 
             jQuery(document).ready(function($) {
-                $('.ConfirmDelete').click(function() {
-                    var question = $(this).attr('title');
-                    if (question == '') question = 'Delete this record?';
-                    return confirm(question);
-                });
-                $('.popover').popover('show')
-                openid.init('openid_identifier');
-                sh_highlightDocument('@routes.Assets.at("javascripts/shjs/0.6/")', '.js');
-            });
-        </script>
+    $('.ConfirmDelete').click(function() {
+    var question = $(this).attr('title');
+    if (question == '') question = 'Delete this record?';
+    return confirm(question);
+    });
+    $('.popover').popover('show')
+    openid.init('openid_identifier');
+    sh_highlightDocument('@routes.Assets.at("javascripts/shjs/0.6/")', '.js');
+    });
+</script>
 
-
-    </head>
-    <body>
+</head>
+<body>
     <div class="container-fluid">
-            <div class="navbar navbar-fixed-top navbar-inverse">
-                <div class="navbar-inner">
-                    <div class="container">
-                        <ul class="nav">
-                            <li class="active">
-                                <a class="brand" href="/" >CestPasDur.com</a>
-                            </li>
-                            @if(!loggedin) {
+        <div class="navbar navbar-fixed-top navbar-inverse">
+            <div class="navbar-inner">
+                <div class="container">
+                    <ul class="nav">
+                        <li class="active">
+                            <a class="brand" href="/" >CestPasDur.com</a>
+                        </li>
+                        @if(!loggedin) {
                             <li>
                                 <a href="@routes.Administration.index()">Admin</a>
                             </li>
                             <li>
                                 <a href="@routes.AuthController.logout()">Logout</a>
                             </li>
-                            }else{
+                        } else {
                             <li>
                                 <a href="@routes.AuthController.login()">Login</a>
                             </li>
-                            }
-                        </ul>
+
+
+                        }
+                    </ul>
+                    <div class="pull-right">
+                        <form class="navbar-search " action="search">
+                            <input type="text" name="q" class="input-medium search-query" placeholder="Recherche">
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
 
 
         <div class="row-fluid">
-                <div class="span2">&#160;</div>
-                <div class="span6">
+            <div class="span2">&#160;</div>
+            <div class="span6">
                 <p class="hidden-tablet hidden-phone">&#160;</p>
                 <p class="hidden-tablet hidden-phone">&#160;</p>
                 @content
-                </div>
-                <div class="span4">
-                    <div id="abonnement" class="hidden-phone hidden-tablet">
-                            <h4>Abonnements</h4>
-                          <span><i class="icon-rss"></i><a href="@routes.Application.feed">Flux RSS</a></span>
-                          <br/>
-                          <span><i class="icon-linkedin"></i><a href="http://www.linkedin.com/in/dgouyette">Profil linkedin</a></span>
-                           <br/>
-                          <span><i class="icon-twitter"></i><a href="https://twitter.com/cestpasdur">Profil twitter</a></span>
-                         <br/>
-                          <span><i class="icon-github"></i><a href="https://github.com/dgouyette">Profil github</a></span>
+            </div>
+            <div class="span4">
+                <div id="abonnement" class="hidden-phone hidden-tablet">
+                    <h4>Abonnements</h4>
+                    <span><i class="icon-rss"></i> <a href="@routes.Application.feed">Flux RSS</a></span>
+                    <br/>
+                    <span><i class="icon-linkedin"></i> <a href="http://www.linkedin.com/in/dgouyette">Profil linkedin</a></span>
+                    <br/>
+                    <span><i class="icon-twitter"></i> <a href="https://twitter.com/cestpasdur">Profil twitter</a></span>
+                    <br/>
+                    <span><i class="icon-github"></i> <a href="https://github.com/dgouyette">Profil github</a></span>
 
-                            <p>
-                                <div id="zindepWidget" data-profil="http://www.leszindeps.fr/p/Damien/Gouyette/8aff0abe371c3fd601371c3fe2890009" data-width="200"></div>
-                            </p>
-
+                    <p>
+                        <div id="zindepWidget" data-profil="http://www.leszindeps.fr/p/Damien/Gouyette/8aff0abe371c3fd601371c3fe2890009" data-width="200"></div>
+                        </p>
 
                     </div>
 
-                    <div id="license" class="span4">
-                        <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/>
+                <div id="license" class="span4">
+                    <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/>
                         Cette oeuvre est mise à disposition selon les termes de la Licence Creative Commons Paternité -
                         Pas d'Utilisation Commerciale - Partage à l'Identique 3.0 non transcrit.</a>
-                    </div>
-
                 </div>
+
             </div>
+        </div>
 
 
 
@@ -124,7 +128,7 @@
             </div>
         </footer>
 
-     </div>
+    </div>
 
 
     <script type="text/javascript">
@@ -132,24 +136,21 @@
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-4550541-1']);
         _gaq.push(['_trackPageview']);
-
         (function () {
-            var ga = document.createElement('script');
-            ga.type = 'text/javascript';
-            ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(ga, s);
+        var ga = document.createElement('script');
+        ga.type = 'text/javascript';
+        ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(ga, s);
         })();
-
     </script>
 
 
 
-        <script type="text/javascript" src="http://cloud.github.com/downloads/jaubourg/jquery-jsonp/jquery.jsonp-2.3.0.min.js"></script>
-        <script type="text/javascript" src="http://www.leszindeps.fr/public/javascripts/zindep-dispo.min.js"></script>
+    <script type="text/javascript" src="http://cloud.github.com/downloads/jaubourg/jquery-jsonp/jquery.jsonp-2.3.0.min.js"></script>
+    <script type="text/javascript" src="http://www.leszindeps.fr/public/javascripts/zindep-dispo.min.js"></script>
 
-    </body>
-
+</body>
 
 </html>

@@ -20,7 +20,7 @@ object ApplicationBuild extends Build {
     "org.mindrot" % "jbcrypt" % "0.3m",
     "com.google.guava" % "guava" % "13.0.1",
     "org.reactivemongo" %% "play2-reactivemongo" % "0.8",
-    "org.elasticsearch" % "elasticsearch" % "0.19.0"
+    "org.elasticsearch" % "elasticsearch" % "0.90.0"
   )
 
 
