@@ -1,4 +1,4 @@
-@(currentPage: Page[Post], loggedin : Boolean = false)
+@(currentPage: Page[Post], loggedin : Boolean = false, postsByMonth :  IndexedSeq[models.PostByMonth])
 
 @import utils.TextileHelper._
 @import play.api.data.format.Formats._
@@ -12,7 +12,8 @@
     routes.Application.index(newPage)
 }
 
-@main("", loggedin) {
+@main("", loggedin, postsByMonth) {
+
 
     @currentPage.items.map { post =>
         <h2>
@@ -59,6 +60,10 @@
 </ul>
     </div>
 </div>
+
+
+
+
 
 
     }

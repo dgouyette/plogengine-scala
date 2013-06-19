@@ -26,6 +26,8 @@ case class Post(id: Option[Long], title: String, url: String, chapeau: Option[St
 
 case class PostLight(title: String, url: String,   chapeau: Option[String], content: Option[String], postedAt : java.util.Date)
 
+case class PostByMonth(libelle : String,dateString: String, count : Long)
+
 
 object PostDao extends Table[Post]("post") {
   def incrementHits(id: Option[Long]) = {

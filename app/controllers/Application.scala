@@ -6,15 +6,13 @@ import play.api.cache.Cached
 import utils.TextileHelper
 import com.sun.syndication.io.SyndFeedOutput
 import java.text.SimpleDateFormat
-import models.{PostLight, ImageDao, PostDao}
+import models.{PostByMonth, PostLight, ImageDao, PostDao}
 import com.sun.syndication.feed.synd.{SyndContentImpl, SyndEntryImpl, SyndFeedImpl}
-import java.util.ArrayList
+import java.util.{Date, ArrayList}
 import org.elasticsearch.index.query.QueryBuilders._
-import org.elasticsearch.index.query.{QueryBuilder, QueryBuilders}
+import org.elasticsearch.index.query.{FilterBuilders, QueryBuilder, QueryBuilders}
 import org.elasticsearch.action.search.SearchResponse
-import org.elasticsearch.search.facet.{Facets, FacetBuilders}
-import java.util.concurrent.TimeUnit
-import org.elasticsearch.search.facet.histogram.HistogramFacet
+import org.elasticsearch.search.facet.FacetBuilders
 import org.elasticsearch.search.facet.datehistogram.DateHistogramFacet
 ;
 
@@ -28,9 +26,20 @@ object Application extends Controller {
       implicit request =>
         val posts = PostDao.findAllPublished(page)
 
-        Ok(views.html.index(posts, request.session.get("email").isEmpty))
+        Ok(views.html.index(posts, request.session.get("email").isEmpty, searchFacet().reverse))
     }
 
+
+  def searchByDate(q: String) = Action {
+    implicit request =>
+      val response =  Administration.client.prepareSearch()
+        .setQuery(QueryBuilders.matchAllQuery())
+        .setFilter(FilterBuilders.numericRangeFilter("postedAt").from(q+"-01").to(q+"-30")).execute().get()
+
+
+
+      Ok(views.html.search(mapResponse(response), q, response))
+  }
 
   def search(q: String) = Action {
     implicit request =>
@@ -44,29 +53,25 @@ object Application extends Controller {
   }
 
 
-  def searchFacet() = Action {
+  def searchFacet() = {
     val f = FacetBuilders.dateHistogramFacet("f")
       .field("postedAt")
       .interval("month")
 
-   val response =  Administration.client.prepareSearch()
+    val response = Administration.client.prepareSearch()
       .setQuery(QueryBuilders.matchAllQuery())
       .addFacet(f)
       .execute().actionGet()
 
-    val facets : DateHistogramFacet = response.getFacets.facetsAsMap().get("f").asInstanceOf[DateHistogramFacet]
+    val facets: DateHistogramFacet = response.getFacets.facetsAsMap().get("f").asInstanceOf[DateHistogramFacet]
 
-
-    //for(i <- 1 to 10) println(i)
-    for (i <- 0 to facets.getEntries.size()-1){
-      val entry = facets.getEntries.get(i)
-      println(entry.getKey + " - "+entry.getCount+"-"+entry.getTotalCount)
+    for (i <- 0 to facets.getEntries.size() - 1)
+    yield {
+      val entry: DateHistogramFacet.Entry = facets.getEntries.get(i)
+      PostByMonth(new SimpleDateFormat("MMMMMMMM yyyy").format(new Date(entry.getTime)), new SimpleDateFormat("yyyy-MM").format(new Date(entry.getTime)), entry.getCount)
     }
 
 
-    println(facets)
-
-    Ok("")
   }
 
 

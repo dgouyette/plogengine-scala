@@ -9,7 +9,7 @@ GET     /login                                                   controllers.Aut
 POST    /authent                                                 controllers.AuthController.authenticate
 GET     /logout                                                  controllers.AuthController.logout
 GET     /search                     controllers.Application.search(q : String)
-GET     /search/facet               controllers.Application.searchFacet
+GET     /searchByDate               controllers.Application.searchByDate(q : String)
 GET     /feed/                      controllers.Application.feed
 GET     /admin                      controllers.Administration.index
 GET     /admin/create               controllers.Administration.create
