@@ -48,7 +48,6 @@ object Administration extends Controller with Secured {
       request =>
         PostDao.findAll().map {
           post =>
-
             if (post.published) {
               client.prepareIndex("articles", "article").setSource(jsonBuilder()
                 .startObject()
@@ -63,6 +62,7 @@ object Administration extends Controller with Secured {
         Ok(s"index ok")
 
   }
+
 
   def restore() = Action(parse.json) {
     request =>
@@ -87,8 +87,6 @@ object Administration extends Controller with Secured {
 
   }
 
-
-  def clearIndexes() = TODO
 
   def create() = withUser {
     username =>

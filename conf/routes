@@ -9,6 +9,7 @@ GET     /login                                                   controllers.Aut
 POST    /authent                                                 controllers.AuthController.authenticate
 GET     /logout                                                  controllers.AuthController.logout
 GET     /search                     controllers.Application.search(q : String)
+GET     /search/facet               controllers.Application.searchFacet
 GET     /feed/                      controllers.Application.feed
 GET     /admin                      controllers.Administration.index
 GET     /admin/create               controllers.Administration.create
@@ -18,7 +19,6 @@ GET     /admin/delete/:id           controllers.Administration.delete(id:Long)
 POST    /admin/save/                controllers.Administration.save()
 POST    /admin/update/              controllers.Administration.update(id:Long)
 POST    /admin/upload/           controllers.Administration.upload
-GET    /admin/index/clear         controllers.Administration.clearIndexes
 POST    /admin/restore/         controllers.Administration.restore
 GET     /admin/export/               controllers.Administration.export
 GET     /admin/index                controllers.Administration.indexSearch

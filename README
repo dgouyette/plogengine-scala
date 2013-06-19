@@ -1,1 +1,5 @@
 Version de plogengine portée en play21(slick) et scala
+
+
+### Delete index
+curl -XDELETE 'http://hotel-village-soleil.com:9200/articles'

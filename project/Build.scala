@@ -19,7 +19,8 @@ object ApplicationBuild extends Build {
     "commons-io" % "commons-io" % "2.0.1",
     "org.mindrot" % "jbcrypt" % "0.3m",
     "com.google.guava" % "guava" % "13.0.1",
-    "org.reactivemongo" %% "play2-reactivemongo" % "0.8",
+    "org.jongo" % "jongo" % "0.4",
+
     "org.elasticsearch" % "elasticsearch" % "0.90.0"
   )
 

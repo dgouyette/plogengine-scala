@@ -10,8 +10,13 @@ import models.{PostLight, ImageDao, PostDao}
 import com.sun.syndication.feed.synd.{SyndContentImpl, SyndEntryImpl, SyndFeedImpl}
 import java.util.ArrayList
 import org.elasticsearch.index.query.QueryBuilders._
-import org.elasticsearch.index.query.{QueryBuilder, QueryBuilders, QueryStringQueryBuilder}
+import org.elasticsearch.index.query.{QueryBuilder, QueryBuilders}
 import org.elasticsearch.action.search.SearchResponse
+import org.elasticsearch.search.facet.{Facets, FacetBuilders}
+import java.util.concurrent.TimeUnit
+import org.elasticsearch.search.facet.histogram.HistogramFacet
+import org.elasticsearch.search.facet.datehistogram.DateHistogramFacet
+;
 
 
 object Application extends Controller {
@@ -36,6 +41,32 @@ object Application extends Controller {
       } else {
         Ok(views.html.search(mapResponse(response), q, response))
       }
+  }
+
+
+  def searchFacet() = Action {
+    val f = FacetBuilders.dateHistogramFacet("f")
+      .field("postedAt")
+      .interval("month")
+
+   val response =  Administration.client.prepareSearch()
+      .setQuery(QueryBuilders.matchAllQuery())
+      .addFacet(f)
+      .execute().actionGet()
+
+    val facets : DateHistogramFacet = response.getFacets.facetsAsMap().get("f").asInstanceOf[DateHistogramFacet]
+
+
+    //for(i <- 1 to 10) println(i)
+    for (i <- 0 to facets.getEntries.size()-1){
+      val entry = facets.getEntries.get(i)
+      println(entry.getKey + " - "+entry.getCount+"-"+entry.getTotalCount)
+    }
+
+
+    println(facets)
+
+    Ok("")
   }
 
 
