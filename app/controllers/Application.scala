@@ -8,7 +8,7 @@ import com.sun.syndication.io.SyndFeedOutput
 import java.text.SimpleDateFormat
 import models.{PostByMonth, PostLight, ImageDao, PostDao}
 import com.sun.syndication.feed.synd.{SyndContentImpl, SyndEntryImpl, SyndFeedImpl}
-import java.util.{Date, ArrayList}
+import java.util.{Locale, Date, ArrayList}
 import org.elasticsearch.index.query.QueryBuilders._
 import org.elasticsearch.index.query.{FilterBuilders, QueryBuilder, QueryBuilders}
 import org.elasticsearch.action.search.SearchResponse
@@ -19,7 +19,7 @@ import org.elasticsearch.search.facet.datehistogram.DateHistogramFacet
 
 object Application extends Controller {
 
-  val sdf = new SimpleDateFormat("yyyy-MM-dd");
+  val sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.FRANCE);
 
   def index(page: Int) =
     Action {
@@ -68,7 +68,8 @@ object Application extends Controller {
     for (i <- 0 to facets.getEntries.size() - 1)
     yield {
       val entry: DateHistogramFacet.Entry = facets.getEntries.get(i)
-      PostByMonth(new SimpleDateFormat("MMMMMMMM yyyy").format(new Date(entry.getTime)), new SimpleDateFormat("yyyy-MM").format(new Date(entry.getTime)), entry.getCount)
+
+      PostByMonth(new SimpleDateFormat("MMMMMMMM yyyy", Locale.FRANCE).format(new Date(entry.getTime)), new SimpleDateFormat("yyyy-MM").format(new Date(entry.getTime)), entry.getCount)
     }
 
 
