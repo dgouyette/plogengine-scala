@@ -26,11 +26,11 @@ object Application extends Controller {
       implicit request =>
         val posts = PostDao.findAllPublished(page)
 
-        Ok(views.html.index(posts, request.session.get("email").isEmpty, searchFacet().reverse))
+        Ok(views.html.index(posts, request.session.get("email").isEmpty, IndexedSeq()))
     }
 
 
-  def searchByDate(q: String) = Action {
+  def searchByDate(q: String) = TODO/**Action {
     implicit request =>
       val response =  Administration.client.prepareSearch()
         .setQuery(QueryBuilders.matchAllQuery())
@@ -39,9 +39,9 @@ object Application extends Controller {
 
 
       Ok(views.html.search(mapResponse(response), q, response))
-  }
+  }**/
 
-  def search(q: String) = Action {
+  def search(q: String) = TODO/**Action {
     implicit request =>
       val response = searchArticles(queryString(q))
       if (response.getHits.getHits.isEmpty) {
@@ -50,10 +50,10 @@ object Application extends Controller {
       } else {
         Ok(views.html.search(mapResponse(response), q, response))
       }
-  }
+  }**/
 
 
-  def searchFacet() = {
+  def searchFacet() = TODO /**{
     val f = FacetBuilders.dateHistogramFacet("f")
       .field("postedAt")
       .interval("month")
@@ -73,7 +73,7 @@ object Application extends Controller {
     }
 
 
-  }
+  }**/
 
 
   def mapResponse(response: SearchResponse): List[PostLight] = {
@@ -134,7 +134,7 @@ object Application extends Controller {
   }
 
 
-  def feed = Cached("feed") {
+  def feed = TODO/**Cached("feed") {
     Action {
       val feed = new SyndFeedImpl()
 
@@ -165,7 +165,7 @@ object Application extends Controller {
       feed.setEntries(entries)
       Ok(new SyndFeedOutput().outputString(feed)).as(XML)
     }
-  }
+  }**/
 
 
 }
