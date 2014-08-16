@@ -9,14 +9,7 @@ object TextileHelper {
   val parser = new MarkupParser(new TextileLanguage())
 
 
-  def toHtml(in: Option[String]): String = {
-
-    in match {
-      case Some(str) => parser.parseToHtml(str)
-      case None => ""
-    }
-
-  }
+  def toHtml(in: Option[String]): String = in.map(parser.parseToHtml).getOrElse("")
 
 
 }

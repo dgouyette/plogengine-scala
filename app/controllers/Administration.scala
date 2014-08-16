@@ -23,8 +23,6 @@ object Administration extends Controller with Secured {
 
 
   val client = new TransportClient().addTransportAddress(new InetSocketTransportAddress("hotel-village-soleil.com", 9300))
-
-
   val dateFormat = "dd-MM-yyyy"
 
   val postForm = Form(
@@ -71,7 +69,7 @@ object Administration extends Controller with Secured {
       val articleJson = request.body
       val post = articleJson.as[Post]
       PostDao.create(post)
-      Ok("")
+      Ok(s" post.title = ${post.title} restauré")
   }
 
 
@@ -177,8 +175,8 @@ object Administration extends Controller with Secured {
           post =>
             Ok(views.html.administration.edit(post.id.get, postForm.fill(post)))
         }.getOrElse(
-          NotFound("404 - not found")
-        )
+            NotFound
+          )
   }
 
 

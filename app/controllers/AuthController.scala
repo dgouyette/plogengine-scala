@@ -26,12 +26,8 @@ object AuthController extends Controller {
 
           Logger.info("user = %s".format(user))
           user match {
-            case Some(u) => {
-              Redirect(routes.Administration.index).withSession(Security.username -> u.email)
-            }
-            case None => {
-              Forbidden
-            }
+            case Some(u) => Redirect(routes.Administration.index).withSession(Security.username -> u.email)
+            case None => Forbidden
           }
         }
       )

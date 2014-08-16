@@ -1,5 +1,6 @@
 package controllers
 
+import org.elasticsearch.index.query.FilterBuilders.{rangeFilter, boolFilter}
 import play.api.mvc._
 import play.api.Play.current
 import play.api.cache.Cached
@@ -26,34 +27,32 @@ object Application extends Controller {
       implicit request =>
         val posts = PostDao.findAllPublished(page)
 
-        Ok(views.html.index(posts, request.session.get("email").isEmpty, IndexedSeq()))
+        Ok(views.html.index(posts, request.session.get("email").isEmpty, searchFacet().reverse))
     }
 
 
-  def searchByDate(q: String) = TODO/**Action {
+  def searchByDate(q: String) = Action {
     implicit request =>
-      val response =  Administration.client.prepareSearch()
-        .setQuery(QueryBuilders.matchAllQuery())
-        .setFilter(FilterBuilders.numericRangeFilter("postedAt").from(q+"-01").to(q+"-30")).execute().get()
+      val response = Administration.client
+        .prepareSearch()
+        .setQuery(filteredQuery(matchAllQuery(), boolFilter().must(rangeFilter("postedAt").from(q + "-01").to(q + "-30"))))
+        .execute().get()
+      Ok(views.html.search(mapResponse(response), q, response, false))
+  }
 
-
-
-      Ok(views.html.search(mapResponse(response), q, response))
-  }**/
-
-  def search(q: String) = TODO/**Action {
+  def search(q: String) = Action {
     implicit request =>
       val response = searchArticles(queryString(q))
       if (response.getHits.getHits.isEmpty) {
         val response = searchArticles(QueryBuilders.fuzzyQuery("content", q))
-        Ok(views.html.search(mapResponse(response), q, response))
+        Ok(views.html.search(mapResponse(response), q, response, false))
       } else {
-        Ok(views.html.search(mapResponse(response), q, response))
+        Ok(views.html.search(mapResponse(response), q, response, false))
       }
-  }**/
+  }
 
 
-  def searchFacet() = TODO /**{
+  def searchFacet() = {
     val f = FacetBuilders.dateHistogramFacet("f")
       .field("postedAt")
       .interval("month")
@@ -73,7 +72,7 @@ object Application extends Controller {
     }
 
 
-  }**/
+  }
 
 
   def mapResponse(response: SearchResponse): List[PostLight] = {
@@ -106,8 +105,8 @@ object Application extends Controller {
           post =>
             Ok(views.html.show(post, request.session.get("email").isEmpty))
         }.getOrElse(
-          NotFound("Article non trouve")
-        )
+            NotFound("Article non trouve")
+          )
     }
 
 
@@ -118,8 +117,8 @@ object Application extends Controller {
           post =>
             Ok(views.html.show(post, request.session.get("email").isEmpty))
         }.getOrElse(
-          NotFound("Article non trouve")
-        )
+            NotFound("Article non trouve")
+          )
     }
 
 
@@ -134,38 +133,42 @@ object Application extends Controller {
   }
 
 
-  def feed = TODO/**Cached("feed") {
-    Action {
-      val feed = new SyndFeedImpl()
-
-      feed.setFeedType("rss_2.0")
-      feed.setTitle("CestPasDur.com, flux RSS")
-      feed.setLink("http://www.cestpasdur.com")
-      feed.setDescription("Tutoriaux et ressources du web")
-
-      val posts = PostDao.findAllPublished(0)
-      val entries = new ArrayList[SyndEntryImpl]
+  def feed = {
 
 
-      posts.items.map {
-        post =>
-          val entry = new SyndEntryImpl()
-          entry.setTitle(post.title)
-          entry.setLink(post.url)
-          entry.setPublishedDate(post.postedAt)
+    Cached("feed") {
+      Action {
+        val feed = new SyndFeedImpl()
 
-          val description = new SyndContentImpl()
-          description.setType("text/html")
-          description.setValue(TextileHelper.toHtml(post.chapeau) + " ...")
-          entry.setDescription(description)
-          entry.setUri(routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url).toString())
-          entry.setLink(entry.getUri)
-          entries.add(entry)
+        feed.setFeedType("rss_2.0")
+        feed.setTitle("CestPasDur.com, flux RSS")
+        feed.setLink("http://www.cestpasdur.com")
+        feed.setDescription("Tutoriaux et ressources du web")
+
+        val posts = PostDao.findAllPublished(0)
+        val entries = new ArrayList[SyndEntryImpl]
+
+
+        posts.items.map {
+          post =>
+            val entry = new SyndEntryImpl()
+            entry.setTitle(post.title)
+            entry.setLink(post.url)
+            entry.setPublishedDate(post.postedAt)
+
+            val description = new SyndContentImpl()
+            description.setType("text/html")
+            description.setValue(TextileHelper.toHtml(post.chapeau) + " ...")
+            entry.setDescription(description)
+            entry.setUri(routes.Application.showByDateAndUrl(new SimpleDateFormat("yyyy").format(post.postedAt), new SimpleDateFormat("MM").format(post.postedAt), new SimpleDateFormat("dd").format(post.postedAt), post.url).toString())
+            entry.setLink(entry.getUri)
+            entries.add(entry)
+        }
+        feed.setEntries(entries)
+        Ok(new SyndFeedOutput().outputString(feed)).as(XML)
       }
-      feed.setEntries(entries)
-      Ok(new SyndFeedOutput().outputString(feed)).as(XML)
     }
-  }**/
+  }
 
 
 }
